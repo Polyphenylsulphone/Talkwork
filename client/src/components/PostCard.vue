@@ -1,19 +1,29 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Heart, MessageCircle, Star } from 'lucide-vue-next';
 import { collegeLabel, collegeColor } from '../constants';
+import { http, unwrap } from '../api/http';
+import { useAuthStore } from '../stores/auth';
+import { toast } from '../stores/toast';
 
 const props = defineProps({
   post: { type: Object, required: true },
 });
 
 const router = useRouter();
+const auth = useAuthStore();
+const likeBusy = ref(false);
+const collectBusy = ref(false);
+
 const summary = computed(() => props.post.summary || '');
 const isAnonymous = computed(() => !!Number(props.post.is_anonymous));
 const cardStyle = computed(() => ({
   borderLeft: `3px solid ${collegeColor(props.post.college)}`,
 }));
+
+const liked = computed(() => !!Number(props.post.liked));
+const collected = computed(() => !!Number(props.post.collected));
 
 function go() {
   if (props.post.post_type === 'question') {
@@ -29,6 +39,38 @@ function rel(t) {
   if (d < 3600) return `${Math.floor(d / 60)} 分钟前`;
   if (d < 86400) return `${Math.floor(d / 3600)} 小时前`;
   return `${Math.floor(d / 86400)} 天前`;
+}
+
+async function toggleLike(e) {
+  e.stopPropagation();
+  if (!auth.isLoggedIn) return toast.error('请先登录');
+  if (likeBusy.value) return;
+  likeBusy.value = true;
+  try {
+    const r = unwrap(await http.post(`/posts/${props.post.id}/like`));
+    props.post.liked = !!r.liked;
+    props.post.likes_count = r.likes_count;
+  } catch {
+    /* http 拦截器已 toast */
+  } finally {
+    likeBusy.value = false;
+  }
+}
+
+async function toggleCollect(e) {
+  e.stopPropagation();
+  if (!auth.isLoggedIn) return toast.error('请先登录');
+  if (collectBusy.value) return;
+  collectBusy.value = true;
+  try {
+    const r = unwrap(await http.post(`/posts/${props.post.id}/collect`));
+    props.post.collected = !!r.collected;
+    props.post.collects_count = r.collects_count;
+  } catch {
+    /* http 拦截器已 toast */
+  } finally {
+    collectBusy.value = false;
+  }
 }
 </script>
 
@@ -59,9 +101,29 @@ function rel(t) {
         <span>{{ post.username }}</span>
       </div>
       <div class="meta">
-        <span><Heart :size="16" /> {{ post.likes_count ?? 0 }}</span>
-        <span><Star :size="16" /> {{ post.collects_count ?? 0 }}</span>
-        <span><MessageCircle :size="16" /> {{ post.comments_count ?? post.answers_count ?? 0 }}</span>
+        <button
+          type="button"
+          class="meta-btn"
+          :class="{ on: liked, like: liked }"
+          :disabled="likeBusy"
+          :title="liked ? '取消点赞' : '点赞'"
+          @click="toggleLike"
+        >
+          <Heart class="meta-ic" :size="16" :fill="liked ? 'currentColor' : 'none'" />
+          <span class="meta-num">{{ post.likes_count ?? 0 }}</span>
+        </button>
+        <button
+          type="button"
+          class="meta-btn"
+          :class="{ on: collected, collect: collected }"
+          :disabled="collectBusy"
+          :title="collected ? '取消收藏' : '收藏'"
+          @click="toggleCollect"
+        >
+          <Star class="meta-ic" :size="16" :fill="collected ? 'currentColor' : 'none'" />
+          <span class="meta-num">{{ post.collects_count ?? 0 }}</span>
+        </button>
+        <span class="meta-readonly"><MessageCircle :size="16" /> {{ post.comments_count ?? post.answers_count ?? 0 }}</span>
         <span class="time">{{ rel(post.created_at) }}</span>
       </div>
     </div>
@@ -185,16 +247,61 @@ function rel(t) {
 }
 .meta {
   display: flex;
-  gap: 10px;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
   font-size: 12px;
   color: var(--tw-muted);
 }
-.meta span {
+.meta-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 4px 8px;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: #64748b;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.12s ease;
+}
+.meta-btn:hover:not(:disabled) {
+  background: rgba(148, 163, 184, 0.22);
+  transform: scale(1.03);
+}
+.meta-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.meta-btn.like.on {
+  color: #e11d48;
+  background: rgba(244, 63, 94, 0.14);
+}
+.meta-btn.collect.on {
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.18);
+}
+.meta-ic {
+  flex-shrink: 0;
+}
+.meta-num {
+  font-weight: 800;
+  min-width: 1ch;
+}
+.meta-readonly {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 2px;
+  color: #94a3b8;
 }
 .time {
   color: #94a3b8;
+  padding-left: 2px;
 }
 </style>

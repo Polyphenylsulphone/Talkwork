@@ -101,14 +101,20 @@ router.get('/', authOptional, async (req, res) => {
         '((SELECT COUNT(*) FROM answer_likes al JOIN answers a2 ON a2.id = al.answer_id WHERE a2.post_id = p.id) * 2 + (SELECT COUNT(*) FROM answer_comments ac JOIN answers a3 ON a3.id = ac.answer_id WHERE a3.post_id = p.id) * 3 + p.views) DESC, p.created_at DESC';
     }
 
+    const uid = req.user?.id || 0;
     const list = await query(
       `SELECT p.*, u.username,
         (SELECT COUNT(*) FROM answers a WHERE a.post_id = p.id AND a.is_ai = 0) AS human_answers,
-        (SELECT COUNT(*) FROM answers a WHERE a.post_id = p.id) AS answers_count
+        (SELECT COUNT(*) FROM answers a WHERE a.post_id = p.id) AS answers_count,
+        (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes_count,
+        (SELECT COUNT(*) FROM post_collects pc WHERE pc.post_id = p.id) AS collects_count,
+        (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count,
+        EXISTS (SELECT 1 FROM post_likes plx WHERE plx.post_id = p.id AND plx.user_id = ?) AS liked,
+        EXISTS (SELECT 1 FROM post_collects pcx WHERE pcx.post_id = p.id AND pcx.user_id = ?) AS collected
        FROM posts p JOIN users u ON u.id = p.user_id
        WHERE ${where}
        ORDER BY ${orderBy} LIMIT ? OFFSET ?`,
-      [...params, pageSize, offset]
+      [uid, uid, ...params, pageSize, offset]
     );
 
     const mapped = list.map((p) =>
