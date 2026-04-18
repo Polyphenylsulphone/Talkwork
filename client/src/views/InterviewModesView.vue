@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { http, unwrap } from '../api/http';
 import { toast } from '../stores/toast';
+import InterviewStartingOverlay from '../components/InterviewStartingOverlay.vue';
 
 const router = useRouter();
 const selectedMode = ref('');
@@ -10,7 +11,13 @@ const resumeWay = ref('saved');
 const resumes = ref([]);
 const selectedResumeId = ref('');
 const manualResume = ref('');
-const loading = ref(false);
+const preparing = ref(false);
+
+const prepareSubtitle = computed(() => {
+  if (resumeWay.value === 'saved') return '正在读取你的简历…';
+  if (resumeWay.value === 'manual') return '正在整理你的亮点…';
+  return '正在进入面试间…';
+});
 
 const modes = [
   {
@@ -56,28 +63,42 @@ onMounted(async () => {
 
 async function startInterview() {
   if (!selectedMode.value) return toast.error('请先选择面试模式');
-  let resumeText = '';
-  if (resumeWay.value === 'saved') {
-    if (!selectedResumeId.value) return toast.error('请选择一份已保存简历');
-    loading.value = true;
-    try {
+  preparing.value = true;
+  const t0 = Date.now();
+  const minPrepareMs = 520;
+  try {
+    let resumeText = '';
+    if (resumeWay.value === 'saved') {
+      if (!selectedResumeId.value) {
+        preparing.value = false;
+        return toast.error('请选择一份已保存简历');
+      }
       const detail = unwrap(await http.get(`/resumes/${selectedResumeId.value}`));
       resumeText = JSON.stringify(detail?.data_json || {}, null, 2);
-    } finally {
-      loading.value = false;
+    } else if (resumeWay.value === 'manual') {
+      resumeText = manualResume.value.trim();
+      if (!resumeText) {
+        preparing.value = false;
+        return toast.error('请粘贴简历内容，或选择跳过');
+      }
     }
-  } else if (resumeWay.value === 'manual') {
-    resumeText = manualResume.value.trim();
-    if (!resumeText) return toast.error('请粘贴简历内容，或选择跳过');
+    const wait = minPrepareMs - (Date.now() - t0);
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    sessionStorage.setItem('tw_iv_mode', selectedMode.value);
+    sessionStorage.setItem('tw_resume_text', resumeText);
+    router.push({ name: 'interview-session', query: { mode: selectedMode.value } });
+  } catch {
+    toast.error('加载失败，请重试');
+  } finally {
+    preparing.value = false;
   }
-  sessionStorage.setItem('tw_iv_mode', selectedMode.value);
-  sessionStorage.setItem('tw_resume_text', resumeText);
-  router.push({ name: 'interview-session', query: { mode: selectedMode.value } });
 }
 </script>
 
 <template>
   <div>
+    <InterviewStartingOverlay :show="preparing" title="马上就好啦" :subtitle="prepareSubtitle" />
+
     <section class="hero tw-card">
       <h1 class="page-title">模拟面试</h1>
       <p class="muted">数字人面试官将接入魔珐星云 API（当前为温馨占位界面 + 后端题库/复盘）。</p>
@@ -150,8 +171,8 @@ async function startInterview() {
 
       <div v-if="resumeWay === 'skip'" class="pane muted">本次不关联简历，AI 将仅基于岗位生成通用追问。</div>
 
-      <button class="tw-btn tw-btn-primary start-btn" type="button" :disabled="!canStart || loading" @click="startInterview">
-        {{ loading ? '正在加载简历…' : '开始面试' }}
+      <button class="tw-btn tw-btn-primary start-btn" type="button" :disabled="!canStart || preparing" @click="startInterview">
+        开始面试
       </button>
     </section>
   </div>

@@ -7,11 +7,10 @@ dotenv.config();
 async function main() {
   const hash = await bcrypt.hash('demo12345', 10);
   try {
-    await execute('INSERT INTO users (username, password_hash, college) VALUES (?,?,?)', [
-      'demo',
-      hash,
-      'engineering',
-    ]);
+    await execute(
+      'INSERT INTO users (username, student_no, email, password_hash, college) VALUES (?,?,?,?,?)',
+      ['demo', 'demo', 'demo@example.invalid', hash, 'engineering']
+    );
   } catch (e) {
     if (e.code !== 'ER_DUP_ENTRY') throw e;
   }
