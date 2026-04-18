@@ -41,7 +41,12 @@ async function enrichAnswers(answers, viewerId) {
       ? query(`SELECT answer_id FROM answer_collects WHERE user_id = ? AND answer_id IN (${ph})`, [uid, ...ids])
       : Promise.resolve([]),
     query(
-      `SELECT ac.*, u.username FROM answer_comments ac JOIN users u ON u.id = ac.user_id WHERE ac.answer_id IN (${ph}) ORDER BY ac.created_at ASC`,
+      `SELECT ac.*, u.username, ru.username AS reply_to_username
+       FROM answer_comments ac
+       JOIN users u ON u.id = ac.user_id
+       LEFT JOIN users ru ON ru.id = ac.reply_to_user_id
+       WHERE ac.answer_id IN (${ph})
+       ORDER BY ac.created_at ASC`,
       ids
     ),
   ]);
@@ -172,7 +177,7 @@ router.post('/answers/:answerId/collect', requireAuth, async (req, res) => {
 router.post('/answers/:answerId/comments', requireAuth, async (req, res) => {
   try {
     const answerId = Number(req.params.answerId);
-    const { content } = req.body || {};
+    const { content, parent_comment_id, reply_to_user_id } = req.body || {};
     if (!content || !String(content).trim()) {
       return res.status(400).json(fail(400, '评论不能为空'));
     }
@@ -184,11 +189,33 @@ router.post('/answers/:answerId/comments', requireAuth, async (req, res) => {
     const rows = await query('SELECT id FROM answers WHERE id = ?', [answerId]);
     if (!rows[0]) return res.status(404).json(fail(404, '回答不存在'));
     const safe = sanitizePlainText(String(content).trim());
-    await execute('INSERT INTO answer_comments (answer_id, user_id, content) VALUES (?,?,?)', [
+    let parentId = Number(parent_comment_id) || null;
+    let replyToUserId = Number(reply_to_user_id) || null;
+    if (parentId) {
+      const parentRows = await query(
+        'SELECT id, answer_id, parent_comment_id, user_id FROM answer_comments WHERE id = ?',
+        [parentId]
+      );
+      const parent = parentRows[0];
+      if (!parent || Number(parent.answer_id) !== answerId) {
+        return res.status(400).json(fail(400, '回复目标不存在'));
+      }
+      // 最多两级：回复二级评论时，挂到一级父评论下
+      if (parent.parent_comment_id) parentId = Number(parent.parent_comment_id);
+      if (!replyToUserId) replyToUserId = Number(parent.user_id);
+    } else {
+      replyToUserId = null;
+    }
+    await execute(
+      'INSERT INTO answer_comments (answer_id, user_id, content, parent_comment_id, reply_to_user_id) VALUES (?,?,?,?,?)',
+      [
       answerId,
       req.user.id,
       safe,
-    ]);
+        parentId,
+        replyToUserId,
+      ]
+    );
     const postRow = await query('SELECT post_id FROM answers WHERE id = ?', [answerId]);
     const postId = postRow[0].post_id;
     let answers = await query(

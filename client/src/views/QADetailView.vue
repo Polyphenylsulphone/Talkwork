@@ -2,7 +2,7 @@
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import DOMPurify from 'dompurify';
-import { Heart, MessageCircle, Star } from 'lucide-vue-next';
+import { Heart, MessageCircle, Reply, Star } from 'lucide-vue-next';
 import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { toast } from '../stores/toast';
@@ -18,6 +18,7 @@ const showEditor = ref(false);
 const sort = ref('new');
 const replyForId = ref(null);
 const replyText = ref('');
+const replyTarget = ref(null);
 const menuForId = ref(null);
 const delAnswerId = ref(null);
 const editingId = ref(null);
@@ -68,16 +69,61 @@ function toggleReply(a) {
   menuForId.value = null;
   replyForId.value = replyForId.value === a.id ? null : a.id;
   replyText.value = '';
+  replyTarget.value = null;
 }
 
 async function submitReply(a) {
   if (!auth.isLoggedIn) return toast.error('请先登录');
   if (!replyText.value.trim()) return toast.error('评论不能为空');
-  const rows = unwrap(await http.post(`/qa/answers/${a.id}/comments`, { content: replyText.value }));
+  const rows = unwrap(
+    await http.post(`/qa/answers/${a.id}/comments`, {
+      content: replyText.value,
+      parent_comment_id: replyTarget.value?.parentId || null,
+      reply_to_user_id: replyTarget.value?.userId || null,
+    })
+  );
   data.value.answers = rows.map(normalizeAnswer);
   replyText.value = '';
   replyForId.value = null;
+  replyTarget.value = null;
   toast.success('已发布');
+}
+
+function threadComments(list) {
+  const arr = Array.isArray(list) ? list : [];
+  const roots = [];
+  const map = new Map();
+  arr.forEach((item) => map.set(item.id, { ...item, children: [] }));
+  arr.forEach((item) => {
+    const cur = map.get(item.id);
+    if (!item.parent_comment_id) {
+      roots.push(cur);
+      return;
+    }
+    const parent = map.get(item.parent_comment_id);
+    if (!parent) {
+      roots.push(cur);
+      return;
+    }
+    parent.children.push(cur);
+  });
+  return roots;
+}
+
+function replyToComment(answerId, comment) {
+  if (!auth.isLoggedIn) return toast.error('请先登录');
+  replyForId.value = answerId;
+  const parentId = comment.parent_comment_id || comment.id;
+  replyTarget.value = { parentId, userId: comment.user_id, username: comment.username };
+}
+
+function cancelReplyTarget() {
+  replyTarget.value = null;
+}
+
+function closeReplyBox() {
+  replyForId.value = null;
+  replyTarget.value = null;
 }
 
 async function toggleAnswerLike(a) {
@@ -224,17 +270,49 @@ function canManage(a) {
           </div>
 
           <div v-if="a.reply_comments?.length" class="replies">
-            <div v-for="r in a.reply_comments" :key="r.id" class="rep">
-              <b>{{ r.username }}</b>
-              <span class="muted sm rep-time">{{ formatCommentTime(r.created_at) }}</span>
+            <div v-for="r in threadComments(a.reply_comments)" :key="r.id" class="rep">
+              <div>
+                <b>{{ r.username }}</b>
+                <span class="muted sm rep-time">{{ formatCommentTime(r.created_at) }}</span>
+              </div>
               <div class="rep-txt">{{ r.content }}</div>
+              <button type="button" class="rep-reply" :disabled="!auth.isLoggedIn" @click="replyToComment(a.id, r)">
+                <Reply :size="14" /> 回复
+              </button>
+              <div v-for="child in r.children" :key="child.id" class="rep-sub">
+                <div>
+                  <b>{{ child.username }}</b>
+                  <span class="muted sm rep-time">{{ formatCommentTime(child.created_at) }}</span>
+                </div>
+                <div class="rep-txt">
+                  <span v-if="child.reply_to_user_id" class="rep-at">回复 {{ child.reply_to_username || '用户' }}：</span>
+                  {{ child.content }}
+                </div>
+                <button
+                  type="button"
+                  class="rep-reply"
+                  :disabled="!auth.isLoggedIn"
+                  @click="replyToComment(a.id, child)"
+                >
+                  <Reply :size="14" /> 回复
+                </button>
+              </div>
             </div>
           </div>
 
           <div v-if="replyForId === a.id" class="reply-box tw-card">
-            <textarea v-model="replyText" class="tw-input" rows="3" placeholder="写下评论…" />
+            <div v-if="replyTarget" class="reply-tip">
+              正在回复 <b>{{ replyTarget.username }}</b>
+              <button type="button" class="reply-cancel" @click="cancelReplyTarget">取消</button>
+            </div>
+            <textarea
+              v-model="replyText"
+              class="tw-input"
+              rows="3"
+              :placeholder="replyTarget ? `回复 ${replyTarget.username}...` : '写下评论…'"
+            />
             <div class="reply-row">
-              <button type="button" class="tw-btn tw-btn-ghost" @click="replyForId = null">取消</button>
+              <button type="button" class="tw-btn tw-btn-ghost" @click="closeReplyBox">取消</button>
               <button type="button" class="tw-btn tw-btn-primary" @click="submitReply(a)">发送</button>
             </div>
           </div>
@@ -470,13 +548,40 @@ function canManage(a) {
 .rep {
   margin-bottom: 10px;
 }
+.rep-sub {
+  margin-top: 8px;
+  margin-left: 14px;
+  padding-left: 10px;
+  border-left: 2px dashed rgba(148, 163, 184, 0.35);
+}
 .rep-txt {
   margin-top: 4px;
   white-space: pre-wrap;
   font-size: 14px;
 }
+.rep-reply {
+  margin-top: 6px;
+  border: none;
+  background: transparent;
+  color: var(--tw-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.rep-reply:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .rep-time {
   margin-left: 8px;
+}
+.rep-at {
+  color: #1d4ed8;
+  font-weight: 700;
 }
 .reply-box {
   margin-top: 10px;
@@ -489,6 +594,20 @@ function canManage(a) {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+.reply-tip {
+  font-size: 12px;
+  color: var(--tw-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reply-cancel {
+  border: none;
+  background: transparent;
+  color: #1a56db;
+  cursor: pointer;
+  font-size: 12px;
 }
 .edit-actions {
   display: flex;

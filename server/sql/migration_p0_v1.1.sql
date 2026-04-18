@@ -24,7 +24,10 @@ CREATE TABLE IF NOT EXISTS answer_comments (
   answer_id INT NOT NULL,
   user_id INT NOT NULL,
   content TEXT NOT NULL,
+  parent_comment_id INT NULL,
+  reply_to_user_id INT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_answer_parent (answer_id, parent_comment_id)
 );
