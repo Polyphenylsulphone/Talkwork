@@ -5,6 +5,7 @@ import { Mic, Volume2 } from 'lucide-vue-next';
 import Recorder from 'js-audio-recorder';
 import { http, unwrap } from '../api/http';
 import { toast } from '../stores/toast';
+import InterviewStartingOverlay from '../components/InterviewStartingOverlay.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -18,6 +19,7 @@ const idx = ref(0);
 const answer = ref('');
 const transcript = ref([]);
 const started = ref(false);
+const startingInterview = ref(false);
 const seconds = ref(0);
 const ending = ref(false);
 const endingText = ref('');
@@ -411,21 +413,35 @@ async function start() {
   job.value = selected;
   jobErr.value = '';
   jobOpen.value = false;
-  const r = unwrap(
-    await http.post('/interview/start', {
-      mode: mode.value,
-      job_title: job.value,
-      resume_text: resume.value,
-    })
-  );
-  sessionId.value = r.id;
-  questions.value = r.questions || [];
-  idx.value = 0;
-  started.value = true;
-  transcript.value = [];
-  seconds.value = 0;
-  if (timer) clearInterval(timer);
-  timer = setInterval(tick, 1000);
+  startingInterview.value = true;
+  const t0 = Date.now();
+  const minPrepareMs = 520;
+  try {
+    const r = unwrap(
+      await http.post('/interview/start', {
+        mode: mode.value,
+        job_title: job.value,
+        resume_text: resume.value,
+      })
+    );
+    sessionId.value = r.id;
+    questions.value = r.questions || [];
+    idx.value = 0;
+    started.value = true;
+    transcript.value = [];
+    seconds.value = 0;
+    if (timer) clearInterval(timer);
+    timer = setInterval(tick, 1000);
+  } catch (e) {
+    console.error(e);
+    // 网络/HTTP 错误已在 http 拦截器里 toast；业务 code≠200 会 reject 普通 Error，需在此提示
+    if (!e?.isAxiosError) toast.error(e?.message || '开启面试失败，请稍后重试');
+    startingInterview.value = false;
+    return;
+  }
+  const wait = minPrepareMs - (Date.now() - t0);
+  if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+  startingInterview.value = false;
   await speakQuestionText(questions.value[idx.value]);
 }
 
@@ -521,6 +537,12 @@ function onJobKeydown(e) {
 
 <template>
   <div>
+    <InterviewStartingOverlay
+      :show="startingInterview"
+      title="面试官正在就位"
+      subtitle="正在根据岗位生成题目，请稍候…"
+    />
+
     <div v-if="!started" class="prep tw-card">
       <h2 class="page-title">面试前准备</h2>
       <p class="muted">模式：<b>{{ mode }}</b></p>
@@ -563,7 +585,9 @@ function onJobKeydown(e) {
         <div class="muted sm">接入魔珐星云后，这里会显示面试官形象与口型同步视频流。</div>
       </div>
 
-      <button class="tw-btn tw-btn-primary full" type="button" @click="start">开始面试</button>
+      <button class="tw-btn tw-btn-primary full" type="button" :disabled="startingInterview" @click="start">
+        {{ startingInterview ? '准备中…' : '开始面试' }}
+      </button>
     </div>
 
     <div v-else class="live">

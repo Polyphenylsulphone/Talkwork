@@ -9,13 +9,16 @@ const router = Router();
 router.get('/posts', requireAuth, async (req, res) => {
   try {
     const q = req.query.q ? String(req.query.q).trim() : '';
+    const uid = req.user.id;
     let sql = `SELECT p.id, p.title, p.content, p.college, p.post_type, p.created_at, p.is_private, p.is_anonymous,
       u.username, u.avatar_url,
       (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes_count,
       (SELECT COUNT(*) FROM post_collects pc WHERE pc.post_id = p.id) AS collects_count,
-      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count,
+      EXISTS (SELECT 1 FROM post_likes pl2 WHERE pl2.post_id = p.id AND pl2.user_id = ?) AS liked,
+      EXISTS (SELECT 1 FROM post_collects pc2 WHERE pc2.post_id = p.id AND pc2.user_id = ?) AS collected
       FROM posts p JOIN users u ON u.id = p.user_id WHERE p.user_id = ?`;
-    const params = [req.user.id];
+    const params = [uid, uid, uid];
     if (q) {
       sql += ' AND (p.title LIKE ? OR p.content LIKE ?)';
       params.push(`%${q}%`, `%${q}%`);
@@ -32,14 +35,17 @@ router.get('/posts', requireAuth, async (req, res) => {
 router.get('/collects', requireAuth, async (req, res) => {
   try {
     const q = req.query.q ? String(req.query.q).trim() : '';
+    const uid = req.user.id;
     let sql = `SELECT p.id, p.title, p.content, p.college, p.post_type, p.created_at, p.is_anonymous,
       u.username, u.avatar_url,
       (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes_count,
       (SELECT COUNT(*) FROM post_collects pc WHERE pc.post_id = p.id) AS collects_count,
-      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count,
+      EXISTS (SELECT 1 FROM post_likes pl2 WHERE pl2.post_id = p.id AND pl2.user_id = ?) AS liked,
+      1 AS collected
       FROM post_collects pc JOIN posts p ON p.id = pc.post_id
       JOIN users u ON u.id = p.user_id WHERE pc.user_id = ?`;
-    const params = [req.user.id];
+    const params = [uid, uid];
     if (q) {
       sql += ' AND (p.title LIKE ? OR p.content LIKE ?)';
       params.push(`%${q}%`, `%${q}%`);
@@ -77,14 +83,17 @@ router.patch('/posts/:id/privacy', requireAuth, async (req, res) => {
 router.get('/likes', requireAuth, async (req, res) => {
   try {
     const q = req.query.q ? String(req.query.q).trim() : '';
+    const uid = req.user.id;
     let sql = `SELECT p.id, p.title, p.content, p.college, p.post_type, p.created_at, p.is_anonymous,
       u.username, u.avatar_url,
       (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes_count,
       (SELECT COUNT(*) FROM post_collects pc WHERE pc.post_id = p.id) AS collects_count,
-      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count,
+      1 AS liked,
+      EXISTS (SELECT 1 FROM post_collects pc2 WHERE pc2.post_id = p.id AND pc2.user_id = ?) AS collected
       FROM post_likes pl JOIN posts p ON p.id = pl.post_id
       JOIN users u ON u.id = p.user_id WHERE pl.user_id = ?`;
-    const params = [req.user.id];
+    const params = [uid, uid];
     if (q) {
       sql += ' AND (p.title LIKE ? OR p.content LIKE ?)';
       params.push(`%${q}%`, `%${q}%`);
@@ -101,14 +110,17 @@ router.get('/likes', requireAuth, async (req, res) => {
 router.get('/history', requireAuth, async (req, res) => {
   try {
     const q = req.query.q ? String(req.query.q).trim() : '';
+    const uid = req.user.id;
     let sql = `SELECT p.id, p.title, p.content, p.college, p.post_type, p.created_at, h.viewed_at, p.is_anonymous,
       u.username, u.avatar_url,
       (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes_count,
       (SELECT COUNT(*) FROM post_collects pc WHERE pc.post_id = p.id) AS collects_count,
-      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count,
+      EXISTS (SELECT 1 FROM post_likes pl2 WHERE pl2.post_id = p.id AND pl2.user_id = ?) AS liked,
+      EXISTS (SELECT 1 FROM post_collects pc2 WHERE pc2.post_id = p.id AND pc2.user_id = ?) AS collected
       FROM browse_history h JOIN posts p ON p.id = h.post_id
       JOIN users u ON u.id = p.user_id WHERE h.user_id = ?`;
-    const params = [req.user.id];
+    const params = [uid, uid, uid];
     if (q) {
       sql += ' AND (p.title LIKE ? OR p.content LIKE ?)';
       params.push(`%${q}%`, `%${q}%`);

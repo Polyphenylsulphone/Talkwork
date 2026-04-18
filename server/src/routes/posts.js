@@ -78,17 +78,20 @@ router.get('/', authOptional, async (req, res) => {
       params.push(`%${kw}%`, `%${kw}%`);
     }
 
+    const uid = req.user?.id || 0;
     const list = await query(
       `SELECT p.id, p.title, p.content, p.post_type, p.college, p.views, p.created_at, p.is_anonymous,
         u.username, u.avatar_url,
         (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes_count,
         (SELECT COUNT(*) FROM post_collects pc WHERE pc.post_id = p.id) AS collects_count,
         (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) AS comments_count,
-        (SELECT COUNT(*) FROM answers a WHERE a.post_id = p.id) AS answers_count
+        (SELECT COUNT(*) FROM answers a WHERE a.post_id = p.id) AS answers_count,
+        EXISTS (SELECT 1 FROM post_likes plx WHERE plx.post_id = p.id AND plx.user_id = ?) AS liked,
+        EXISTS (SELECT 1 FROM post_collects pcx WHERE pcx.post_id = p.id AND pcx.user_id = ?) AS collected
        FROM posts p JOIN users u ON u.id = p.user_id
        WHERE ${where}
        ORDER BY p.created_at DESC LIMIT ? OFFSET ?`,
-      [...params, pageSize, offset]
+      [uid, uid, ...params, pageSize, offset]
     );
 
     const mapped = list.map((p) =>
