@@ -1,0 +1,23 @@
+TalkWork 本地运行（简要）
+
+1) 启动 MySQL（推荐 Docker）
+   在 d:\\TW 目录执行：docker compose up -d
+
+2) 安装依赖
+   d:\\TW\\server  -> npm install
+   d:\\TW\\client  -> npm install
+
+3) 初始化数据库与演示数据（仅首次）
+   复制 server\\.env.example 为 server\\.env ，按需修改 MYSQL_PASSWORD 等
+   d:\\TW\\server -> npm run db:init
+   d:\\TW\\server -> npm run seed
+
+4) 启动
+   d:\\TW\\server -> npm run dev
+   d:\\TW\\client -> npm run dev
+
+5) 浏览器打开 http://localhost:5173
+   演示账号：demo / demo12345
+
+6) AI 能力（可选）
+   在 server\\.env 填写 DEEPSEEK_API_KEY 后重启后端，即可启用真实 DeepSeek 回复/流式输出。

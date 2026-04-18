@@ -1,0 +1,8 @@
+node_modules/
+dist/
+uploads/
+.env
+_docx_extract/
+req.zip
+requirements_utf8.txt
+*.log

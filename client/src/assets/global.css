@@ -1,0 +1,172 @@
+:root {
+  --bg-primary: #cfe9ff;
+  --bg-overlay: linear-gradient(135deg, rgba(255, 247, 240, 0.55) 0%, rgba(207, 233, 255, 0.55) 45%, rgba(255, 228, 214, 0.45) 100%);
+  --bg-elevated: rgba(255, 255, 255, 0.86);
+  --bg-soft: rgba(255, 255, 255, 0.7);
+  --bg-muted: rgba(26, 86, 219, 0.08);
+  --text-primary: #2b2f3a;
+  --text-secondary: #6b7280;
+  --text-strong: #0f172a;
+  --border-primary: rgba(255, 255, 255, 0.55);
+  --border-secondary: rgba(15, 23, 42, 0.14);
+  --shadow-primary: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.75);
+  --input-border: rgba(0, 0, 0, 0.08);
+  --surface-nav: #f8fbff;
+  --surface-tooltip: #1f2937;
+  --surface-tooltip-text: #fff;
+  --icon-soft: rgba(255, 255, 255, 0.55);
+  --icon-accent: #5573b4;
+  --tw-primary: #1a56db;
+  --tw-primary-soft: #e8f0ff;
+  --tw-text: var(--text-primary);
+  --tw-muted: var(--text-secondary);
+  --tw-card: var(--bg-elevated);
+  --tw-blur: blur(12px);
+  --tw-radius-card: 16px;
+  --tw-radius-btn: 8px;
+  --tw-shadow: var(--shadow-primary);
+  --tw-warm: #fff7f0;
+  --tw-accent: #ffb4a2;
+  --tw-leaf: #7bc96f;
+  --tw-bg-image: url('/bg-lake.png');
+}
+
+:root[data-theme='dark'] {
+  --bg-primary: #0b1220;
+  --bg-overlay: linear-gradient(135deg, rgba(8, 15, 29, 0.82) 0%, rgba(14, 27, 52, 0.76) 45%, rgba(20, 24, 39, 0.82) 100%);
+  --bg-elevated: rgba(15, 23, 42, 0.76);
+  --bg-soft: rgba(15, 23, 42, 0.68);
+  --bg-muted: rgba(96, 165, 250, 0.14);
+  --text-primary: #e5eefb;
+  --text-secondary: #9fb1c7;
+  --text-strong: #f8fbff;
+  --border-primary: rgba(148, 163, 184, 0.18);
+  --border-secondary: rgba(148, 163, 184, 0.16);
+  --shadow-primary: 0 10px 30px rgba(0, 0, 0, 0.34);
+  --input-bg: rgba(15, 23, 42, 0.72);
+  --input-border: rgba(148, 163, 184, 0.2);
+  --surface-nav: rgba(10, 18, 34, 0.92);
+  --surface-tooltip: rgba(248, 250, 252, 0.96);
+  --surface-tooltip-text: #0f172a;
+  --icon-soft: rgba(30, 41, 59, 0.9);
+  --icon-accent: #c7d7f4;
+  --tw-primary-soft: rgba(59, 130, 246, 0.14);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--tw-text);
+  background: var(--bg-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: var(--tw-bg-image) center / cover no-repeat;
+  filter: saturate(1.05) brightness(1.02);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg-overlay);
+  pointer-events: none;
+}
+
+a {
+  color: var(--tw-primary);
+  text-decoration: none;
+}
+
+.tw-card {
+  background: var(--tw-card);
+  backdrop-filter: var(--tw-blur);
+  -webkit-backdrop-filter: var(--tw-blur);
+  border-radius: var(--tw-radius-card);
+  box-shadow: var(--tw-shadow);
+}
+
+.tw-btn {
+  border: none;
+  border-radius: var(--tw-radius-btn);
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.tw-btn:active {
+  transform: translateY(1px);
+}
+
+.tw-btn-primary {
+  background: linear-gradient(135deg, #1a56db, #3b82f6);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(26, 86, 219, 0.25);
+}
+
+.tw-btn-ghost {
+  background: var(--bg-soft);
+  color: var(--tw-text);
+  border: 1px solid color-mix(in srgb, var(--tw-primary) 15%, transparent);
+}
+
+.tw-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tw-input::placeholder {
+  color: var(--text-secondary);
+}
+
+select.tw-input,
+textarea.tw-input {
+  color: var(--text-primary);
+}
+
+.tw-input:focus {
+  border-color: rgba(26, 86, 219, 0.45);
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+}
+
+.tw-input.err {
+  border-color: #ef4444;
+}
+
+.page-title {
+  letter-spacing: 0.02em;
+}
+
+#nprogress .bar {
+  background: #1a56db !important;
+  height: 2px !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 8px #1a56db, 0 0 4px #1a56db !important;
+}
