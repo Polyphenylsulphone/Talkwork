@@ -84,45 +84,47 @@ function randomizeTbotFace() {
 </script>
 
 <template>
-  <div>
-    <aside class="side" :class="{ collapsed }">
-      <div class="side-inner tw-card">
-        <div class="side-head">
-          <span v-if="!collapsed" class="side-title">工具栏</span>
-          <button class="collapse" :class="{ open: collapsed }" type="button" :title="collapsed ? '展开' : '收起'" @click="ui.toggleSidebar()">
-            <span class="px-menu" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-          </button>
-        </div>
-
-        <nav class="nav">
-          <RouterLink
-            v-for="it in navItems"
-            :key="it.to"
-            :to="it.to"
-            class="nav-item"
-            :class="{ active: isActive(it.to) }"
-            :title="collapsed ? it.label : ''"
-            :data-tip="collapsed ? it.label : ''"
-          >
-            <span class="ico">
-              <component :is="it.icon" :size="18" />
-            </span>
-            <span v-if="!collapsed" class="txt">{{ it.label }}</span>
-          </RouterLink>
-        </nav>
-
-        <div class="fox" @click="goTbot" @mouseenter="pickTip">
-          <div class="fox-face" :title="tbotFaceLabel">
-            <img class="fox-face-img" :src="tbotFaceUrl" alt="T宝表情" @click.stop="randomizeTbotFace" />
+  <div class="side-nav-root">
+    <div class="side-wrap" :class="{ collapsed }">
+      <aside class="side" :class="{ collapsed }">
+        <div class="side-inner tw-card">
+          <div class="side-head">
+            <span v-if="!collapsed" class="side-title">工具栏</span>
+            <button class="collapse" :class="{ open: collapsed }" type="button" :title="collapsed ? '展开' : '收起'" @click="ui.toggleSidebar()">
+              <span class="px-menu" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+            </button>
           </div>
-          <div v-if="bubble && !collapsed" class="bubble tw-card">{{ bubble }}</div>
+
+          <nav class="nav">
+            <RouterLink
+              v-for="it in navItems"
+              :key="it.to"
+              :to="it.to"
+              class="nav-item"
+              :class="{ active: isActive(it.to) }"
+              :title="collapsed ? it.label : ''"
+              :data-tip="collapsed ? it.label : ''"
+            >
+              <span class="ico">
+                <component :is="it.icon" :size="18" />
+              </span>
+              <span v-if="!collapsed" class="txt">{{ it.label }}</span>
+            </RouterLink>
+          </nav>
+
+          <div class="fox" @click="goTbot" @mouseenter="pickTip">
+            <div class="fox-face" :title="tbotFaceLabel">
+              <img class="fox-face-img" :src="tbotFaceUrl" alt="T宝表情" @click.stop="randomizeTbotFace" />
+            </div>
+            <div v-if="bubble && !collapsed" class="bubble tw-card">{{ bubble }}</div>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
 
     <nav class="mobile-tab tw-card">
       <RouterLink v-for="it in navItems.slice(0, 4)" :key="it.to" :to="it.to" class="m-item" :class="{ active: isActive(it.to) }">
@@ -134,18 +136,31 @@ function randomizeTbotFace() {
 </template>
 
 <style scoped>
-.side {
+.side-wrap {
   width: 240px;
-  padding: 52px 0 0;
+  flex-shrink: 0;
   transition: width 0.18s ease;
+}
+.side-wrap.collapsed {
+  width: 84px;
+}
+.side {
+  position: fixed;
+  left: 0;
+  top: 52px;
+  z-index: 40;
+  width: 240px;
+  height: calc(100vh - 52px);
+  padding: 0;
+  transition: width 0.18s ease;
+  box-sizing: border-box;
 }
 .side.collapsed {
   width: 84px;
 }
 .side-inner {
-  height: calc(100vh - 52px);
-  position: sticky;
-  top: 52px;
+  height: 100%;
+  max-height: calc(100vh - 52px);
   padding: 12px 10px 10px;
   display: flex;
   flex-direction: column;
@@ -346,7 +361,7 @@ function randomizeTbotFace() {
   right: auto;
 }
 @media (max-width: 900px) {
-  .side {
+  .side-wrap {
     display: none;
   }
 }
