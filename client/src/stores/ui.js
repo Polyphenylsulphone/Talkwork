@@ -1,4 +1,10 @@
 import { defineStore } from 'pinia';
+import tbotHappy from '../assets/tbot/tbot-happy.png';
+import tbotQuestion from '../assets/tbot/tbot-question.png';
+import tbotCalm from '../assets/tbot/tbot-calm.png';
+
+/** 供侧栏等使用；换图后重新 build 会生成新 hash，避免浏览器长期缓存旧图 */
+export const TBOT_FACE_URLS = { happy: tbotHappy, question: tbotQuestion, calm: tbotCalm };
 
 const KEY = 'tw_sidebar_collapsed';
 const THEME_KEY = 'tw_theme';
@@ -17,9 +23,9 @@ const WALLPAPER_OPTIONS = [
 ];
 
 const TBOT_MOODS = [
-  { id: 'happy', label: '开心', url: '/tbot-happy.png' },
-  { id: 'question', label: '疑问', url: '/tbot-question.png' },
-  { id: 'calm', label: '平静', url: '/tbot-calm.png' },
+  { id: 'happy', label: '开心', url: TBOT_FACE_URLS.happy },
+  { id: 'question', label: '疑问', url: TBOT_FACE_URLS.question },
+  { id: 'calm', label: '平静', url: TBOT_FACE_URLS.calm },
 ];
 
 export const useUiStore = defineStore('ui', {

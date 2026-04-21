@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-vue-next';
-import { useUiStore } from '../stores/ui';
+import { useUiStore, TBOT_FACE_URLS } from '../stores/ui';
 import { useAuthStore } from '../stores/auth';
 
 const route = useRoute();
@@ -30,7 +30,7 @@ let tipTimer = null;
 let bubbleTimer = null;
 const tbotFaceUrl = computed(() => {
   const match = ui.tbotMoodOptions.find((item) => item.id === ui.tbotMood) || ui.tbotMoodOptions[2];
-  return match?.url || '/tbot-calm.png';
+  return match?.url || TBOT_FACE_URLS.calm;
 });
 const tbotFaceLabel = computed(() => {
   const match = ui.tbotMoodOptions.find((item) => item.id === ui.tbotMood) || ui.tbotMoodOptions[2];
