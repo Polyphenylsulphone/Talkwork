@@ -221,7 +221,11 @@ async function publish() {
   localStorage.setItem(draftListKey.value, JSON.stringify(drafts.value));
   currentDraftId.value = '';
   toast.success('发帖成功');
-  router.push({ name: postType.value === 'question' ? 'qa-detail' : 'post', params: { id: data.id } });
+  if (postType.value === 'question') {
+    router.push({ name: 'qa' });
+  } else {
+    router.push({ name: 'post', params: { id: data.id } });
+  }
 }
 
 async function runAi(mode, sourceText = '') {

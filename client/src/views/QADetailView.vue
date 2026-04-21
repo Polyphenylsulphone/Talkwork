@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import DOMPurify from 'dompurify';
 import { Heart, MessageCircle, Reply, Star } from 'lucide-vue-next';
 import { http, unwrap } from '../api/http';
@@ -10,6 +10,7 @@ import { collegeLabel, collegeColor } from '../constants';
 import { formatCommentTime } from '../utils/time';
 
 const route = useRoute();
+const router = useRouter();
 const auth = useAuthStore();
 
 const data = ref(null);
@@ -35,12 +36,23 @@ const answers = computed(() => {
   return arr;
 });
 
-onMounted(load);
-
-async function load() {
-  data.value = unwrap(await http.get(`/qa/${route.params.id}`));
-  data.value.answers = (data.value.answers || []).map(normalizeAnswer);
-}
+watch(
+  () => route.params.id,
+  async (id) => {
+    if (!id) return;
+    try {
+      const payload = unwrap(await http.get(`/qa/${id}`));
+      if (!payload?.post) throw new Error('empty');
+      data.value = payload;
+      data.value.answers = (data.value.answers || []).map(normalizeAnswer);
+    } catch {
+      data.value = null;
+      toast.error('问题加载失败');
+      router.replace({ name: 'qa' });
+    }
+  },
+  { immediate: true }
+);
 
 function normalizeAnswer(a) {
   return {

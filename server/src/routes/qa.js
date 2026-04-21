@@ -2,9 +2,7 @@ import { Router } from 'express';
 import { query, execute } from '../db.js';
 import { ok, fail } from '../util/response.js';
 import { authOptional, requireAuth } from '../middleware/auth.js';
-import { deepseekChat } from '../services/deepseek.js';
 import { sanitizeRichHtml, sanitizePlainText } from '../util/sanitize.js';
-import { stripAssistantMarkdown } from '../util/plainText.js';
 import { assertNoSensitive } from '../util/sensitive.js';
 import { rankRelatedPosts } from '../util/related.js';
 import { applyAnonymousAuthorDisplay } from '../util/anonymousPost.js';
@@ -16,14 +14,6 @@ function stripHtml(html) {
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-/** T宝问答圈回复：去 Markdown 后按行落成安全 HTML 段落 */
-function tbaoQaAnswerToHtml(raw) {
-  const cleaned = stripAssistantMarkdown(String(raw || '').trim());
-  const parts = cleaned.split(/\n+/).map((s) => s.trim()).filter(Boolean);
-  if (!parts.length) return '<p></p>';
-  return parts.map((p) => `<p>${sanitizePlainText(p)}</p>`).join('');
 }
 
 async function syncAnswerLikes(answerId) {
@@ -317,43 +307,7 @@ router.get('/:id', authOptional, async (req, res) => {
       [id]
     );
 
-    const humanCount = answers.filter((a) => !a.is_ai).length;
-    if (humanCount === 0) {
-      const hasAi = answers.some((a) => a.is_ai);
-      if (!hasAi) {
-        let text = '';
-        try {
-          text = await deepseekChat(
-            [
-              {
-                role: 'system',
-                content:
-                  '你是 TalkWork 问答圈里的「T宝」。像真人朋友聊天那样用中文回复：语气自然、温暖、带点口语，可以偶尔加一两个小表情（别刷屏）。\n' +
-                  '不要用 Markdown 或排版标记：不要 # 标题、不要 ** 加粗、不要 - / 数字列表、不要代码块、不要 > 引用。用几段普通话说清楚，帮对方出主意或打气。\n' +
-                  '最后一行单独写：由T宝AI生成',
-              },
-              {
-                role: 'user',
-                content: `问题：${post.title}\n描述：${stripHtml(post.content).slice(0, 1000)}`,
-              },
-            ],
-            { temperature: 0.55 }
-          );
-        } catch {
-          text = '试着把问题拆成「背景—卡点—已尝试」三部分，会更容易获得高质量回答。\n\n由T宝AI生成';
-        }
-        await query('INSERT INTO answers (post_id, user_id, content, is_ai) VALUES (?,?,?,1)', [
-          id,
-          null,
-          tbaoQaAnswerToHtml(text),
-        ]);
-        answers = await query(
-          `SELECT a.*, u.username, u.avatar_url FROM answers a
-           LEFT JOIN users u ON u.id = a.user_id WHERE a.post_id = ? ORDER BY a.created_at DESC`,
-          [id]
-        );
-      }
-    }
+    // T 宝首答由发帖接口里的 ensureAiAnswer 异步生成；此处不再同步调用模型，避免打开详情时请求长时间挂起导致前端空白。
 
     answers = await enrichAnswers(answers, req.user?.id);
 
