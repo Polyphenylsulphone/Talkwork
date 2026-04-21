@@ -4,6 +4,7 @@ import { ok, fail } from '../util/response.js';
 import { authOptional, requireAuth } from '../middleware/auth.js';
 import { deepseekChat } from '../services/deepseek.js';
 import { sanitizeRichHtml, sanitizePlainText } from '../util/sanitize.js';
+import { stripAssistantMarkdown } from '../util/plainText.js';
 import { assertNoSensitive } from '../util/sensitive.js';
 import { rankRelatedPosts } from '../util/related.js';
 import { applyAnonymousAuthorDisplay } from '../util/anonymousPost.js';
@@ -15,6 +16,14 @@ function stripHtml(html) {
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/** T宝问答圈回复：去 Markdown 后按行落成安全 HTML 段落 */
+function tbaoQaAnswerToHtml(raw) {
+  const cleaned = stripAssistantMarkdown(String(raw || '').trim());
+  const parts = cleaned.split(/\n+/).map((s) => s.trim()).filter(Boolean);
+  if (!parts.length) return '<p></p>';
+  return parts.map((p) => `<p>${sanitizePlainText(p)}</p>`).join('');
 }
 
 async function syncAnswerLikes(answerId) {
@@ -319,7 +328,9 @@ router.get('/:id', authOptional, async (req, res) => {
               {
                 role: 'system',
                 content:
-                  '你是 T宝。用中文给出温暖、结构清晰的第一条回答，帮助提问者迈出下一步。末尾追加一行：由T宝AI生成',
+                  '你是 TalkWork 问答圈里的「T宝」。像真人朋友聊天那样用中文回复：语气自然、温暖、带点口语，可以偶尔加一两个小表情（别刷屏）。\n' +
+                  '不要用 Markdown 或排版标记：不要 # 标题、不要 ** 加粗、不要 - / 数字列表、不要代码块、不要 > 引用。用几段普通话说清楚，帮对方出主意或打气。\n' +
+                  '最后一行单独写：由T宝AI生成',
               },
               {
                 role: 'user',
@@ -334,7 +345,7 @@ router.get('/:id', authOptional, async (req, res) => {
         await query('INSERT INTO answers (post_id, user_id, content, is_ai) VALUES (?,?,?,1)', [
           id,
           null,
-          `<p>${String(text).replace(/\n/g, '</p><p>')}</p>`,
+          tbaoQaAnswerToHtml(text),
         ]);
         answers = await query(
           `SELECT a.*, u.username, u.avatar_url FROM answers a

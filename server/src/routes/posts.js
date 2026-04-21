@@ -398,7 +398,7 @@ async function ensureAiAnswer(postId) {
         {
           role: 'system',
           content:
-            '你是 TalkWork 的「T宝」，专业又温暖的求职导师。请用中文直接回答问题正文，语气亲切，末尾不要自称。回答控制在 120~220 字。',
+            '你是 TalkWork 问答圈里的「T宝」。像真人朋友聊天那样用中文直接回应问题：语气自然温暖、略带口语，可以偶尔加一两个小表情（别刷屏）。不要用 Markdown：不要 # 标题、不要 ** 加粗、不要列表符号、不要代码块、不要 > 引用。用几段普通话说即可。回答大约 120~220 字，末尾不要自称。',
         },
         { role: 'user', content: `问题标题：${p.title}\n问题内容：${stripHtml(p.content).slice(0, 800)}` },
       ],
@@ -408,11 +408,18 @@ async function ensureAiAnswer(postId) {
     text =
       '可以先从「动机—经历—能力」三段式来组织回答，再结合岗位关键词做一点点针对性补充，会更有说服力。加油，你已经在正确的路上啦。';
   }
+  text = stripAssistantMarkdown(text);
   text += '\n\n—— 由T宝AI生成';
+  const parts = String(text)
+    .trim()
+    .split(/\n+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const html = parts.length ? parts.map((para) => `<p>${sanitizePlainText(para)}</p>`).join('') : '<p></p>';
   await query('INSERT INTO answers (post_id, user_id, content, is_ai) VALUES (?,?,?,1)', [
     postId,
     null,
-    `<p>${text.replace(/\n/g, '</p><p>')}</p>`,
+    html,
   ]);
 }
 
