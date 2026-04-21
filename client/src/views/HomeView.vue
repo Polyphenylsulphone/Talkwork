@@ -184,6 +184,9 @@ function getCollegeIcon(id) {
   margin: 0 0 10px 4px;
   color: rgba(43, 47, 58, 0.85);
 }
+:root[data-theme='dark'] .block-title {
+  color: #e9f0f7;
+}
 .carousel-shell {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -222,6 +225,15 @@ function getCollegeIcon(id) {
 .academy:hover {
   transform: translateY(-4px);
   background: rgba(255, 255, 255, 0.92);
+}
+:root[data-theme='dark'] .academy:hover {
+  background: rgba(30, 41, 59, 0.85);
+}
+:root[data-theme='dark'] .name {
+  color: #1e293b;
+}
+:root[data-theme='dark'] .mini {
+  color: #475569;
 }
 .academy.on {
   outline: 2px solid rgba(26, 86, 219, 0.35);

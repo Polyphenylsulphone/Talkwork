@@ -18,7 +18,7 @@ const route = useRoute();
         </div>
       </main>
     </div>
-    <FloatingActions />
+    <FloatingActions v-if="route.name !== 'tbot'" />
   </div>
 </template>
 

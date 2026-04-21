@@ -97,6 +97,17 @@ const cards = [
   line-height: 1.55;
   font-size: 13px;
 }
+:root[data-theme='dark'] .card:hover {
+  background: rgba(30, 41, 59, 0.85);
+}
+:root[data-theme='dark'] .t,
+:root[data-theme='dark'] .d {
+  color: #e9f0f7;
+}
+:root[data-theme='dark'] .card:hover .t,
+:root[data-theme='dark'] .card:hover .d {
+  color: #1e293b;
+}
 .hist {
   margin-top: 12px;
   padding: 14px;

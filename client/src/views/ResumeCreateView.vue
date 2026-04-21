@@ -562,6 +562,19 @@ function goInterview() {
   font-weight: 900;
   color: var(--tw-muted);
 }
+:root[data-theme='dark'] .lbl,
+:root[data-theme='dark'] .tip,
+:root[data-theme='dark'] .muted {
+  color: #b9cadf;
+}
+:root[data-theme='dark'] .btn-lite {
+  background: rgba(30, 41, 59, 0.85);
+  color: #e9f0f7;
+  border-color: rgba(93, 156, 245, 0.25);
+}
+:root[data-theme='dark'] .bar {
+  background: rgba(30, 41, 59, 0.75);
+}
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -587,6 +600,10 @@ function goInterview() {
 .tpl button.on {
   border-color: rgba(26, 86, 219, 0.35);
   background: rgba(26, 86, 219, 0.1);
+}
+:root[data-theme='dark'] .tpl button {
+  background: rgba(30, 41, 59, 0.75);
+  color: #e9f0f7;
 }
 .tip {
   margin-top: 8px;
@@ -653,6 +670,9 @@ function goInterview() {
   top: 76px;
   border: 1px solid rgba(255, 255, 255, 0.55);
   overflow: hidden;
+}
+:root[data-theme='dark'] .preview {
+  background: rgba(30, 41, 59, 0.75);
 }
 .paper {
   background: #fff;
@@ -842,6 +862,10 @@ function goInterview() {
   background: #fff;
   padding: 5px 8px;
   cursor: pointer;
+}
+:root[data-theme='dark'] .icon-x {
+  background: #1e293b;
+  color: #e9f0f7;
 }
 .modal-list {
   margin-top: 10px;

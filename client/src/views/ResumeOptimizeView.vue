@@ -414,6 +414,16 @@ function goInterview() {
   font-size: 12px;
   color: var(--tw-muted);
 }
+:root[data-theme='dark'] .lbl,
+:root[data-theme='dark'] .import-label,
+:root[data-theme='dark'] .tip {
+  color: #b9cadf;
+}
+:root[data-theme='dark'] .out,
+:root[data-theme='dark'] .import-box,
+:root[data-theme='dark'] .loading-box {
+  background: rgba(30, 41, 59, 0.75);
+}
 .row {
   display: flex;
   justify-content: space-between;

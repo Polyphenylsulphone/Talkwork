@@ -290,6 +290,11 @@ function removeResumeDraft(id) {
   padding: 4px 8px;
   cursor: pointer;
 }
+:root[data-theme='dark'] .op-mini {
+  background: rgba(30, 41, 59, 0.75);
+  color: #e9f0f7;
+  border-color: rgba(93, 156, 245, 0.25);
+}
 .menu-box {
   position: relative;
 }

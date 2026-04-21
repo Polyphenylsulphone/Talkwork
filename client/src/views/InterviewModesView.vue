@@ -237,6 +237,25 @@ async function startInterview() {
   line-height: 1.55;
   font-size: 13px;
 }
+:root[data-theme='dark'] .tag {
+  background: rgba(93, 156, 245, 0.2);
+  color: #5d9cf5;
+}
+:root[data-theme='dark'] .card:hover {
+  background: rgba(30, 41, 59, 0.85);
+}
+:root[data-theme='dark'] .t,
+:root[data-theme='dark'] .d {
+  color: #e9f0f7;
+}
+:root[data-theme='dark'] .card:hover .t,
+:root[data-theme='dark'] .card:hover .d {
+  color: #1e293b;
+}
+:root[data-theme='dark'] .card:hover .tag {
+  background: rgba(93, 156, 245, 0.35);
+  color: #1e293b;
+}
 .bind {
   margin-top: 12px;
   padding: 14px;

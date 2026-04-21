@@ -176,6 +176,14 @@ async function shareAsImage() {
   font-weight: 900;
   color: #334155;
 }
+:root[data-theme='dark'] .k,
+:root[data-theme='dark'] .n,
+:root[data-theme='dark'] .b {
+  color: #e9f0f7;
+}
+:root[data-theme='dark'] .item {
+  background: rgba(30, 41, 59, 0.7);
+}
 .bar {
   height: 10px;
   border-radius: 999px;
