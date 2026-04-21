@@ -38,20 +38,26 @@
   --bg-elevated: rgba(15, 23, 42, 0.76);
   --bg-soft: rgba(15, 23, 42, 0.68);
   --bg-muted: rgba(96, 165, 250, 0.14);
-  --text-primary: #e5eefb;
-  --text-secondary: #9fb1c7;
-  --text-strong: #f8fbff;
-  --border-primary: rgba(148, 163, 184, 0.18);
-  --border-secondary: rgba(148, 163, 184, 0.16);
+  /* 正文与标题：略提亮，避免灰阶发闷；不用纯白，减轻刺眼感 */
+  --text-primary: #e9f0f7;
+  --text-secondary: #b9cadf;
+  --text-strong: #f4f7fb;
+  --border-primary: rgba(148, 163, 184, 0.22);
+  --border-secondary: rgba(148, 163, 184, 0.2);
   --shadow-primary: 0 10px 30px rgba(0, 0, 0, 0.34);
   --input-bg: rgba(15, 23, 42, 0.72);
   --input-border: rgba(148, 163, 184, 0.2);
-  --surface-nav: rgba(10, 18, 34, 0.92);
+  --surface-nav: rgba(12, 20, 36, 0.96);
   --surface-tooltip: rgba(248, 250, 252, 0.96);
   --surface-tooltip-text: #0f172a;
-  --icon-soft: rgba(30, 41, 59, 0.9);
-  --icon-accent: #c7d7f4;
-  --tw-primary-soft: rgba(59, 130, 246, 0.14);
+  /* 侧栏图标底与线色：略浅于背景，glyph 用柔亮灰蓝，对比清晰但不晃眼 */
+  --icon-soft: rgba(58, 73, 94, 0.55);
+  --icon-accent: #e4eaf4;
+  /* 暗色下链接/强调色略提亮，在深蓝顶栏上仍可辨 */
+  --tw-primary: #5d9cf5;
+  --tw-primary-soft: rgba(93, 156, 245, 0.16);
+  --tw-text: var(--text-primary);
+  --tw-muted: var(--text-secondary);
 }
 
 *,
@@ -122,6 +128,11 @@ a {
   background: linear-gradient(135deg, #1a56db, #3b82f6);
   color: #fff;
   box-shadow: 0 8px 20px rgba(26, 86, 219, 0.25);
+}
+
+:root[data-theme='dark'] .tw-btn-primary {
+  background: linear-gradient(135deg, #2563eb, #5d9cf5);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
 }
 
 .tw-btn-ghost {
