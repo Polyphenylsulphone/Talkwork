@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Heart, MessageCircle, Star } from 'lucide-vue-next';
 import { collegeLabel, collegeColor } from '../constants';
+import { ANONYMOUS_AVATAR } from '../constants/defaultAvatars';
 import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { toast } from '../stores/toast';
@@ -24,6 +25,13 @@ const cardStyle = computed(() => ({
 
 const liked = computed(() => !!Number(props.post.liked));
 const collected = computed(() => !!Number(props.post.collected));
+const displayAvatar = computed(() => props.post.avatar_url || ANONYMOUS_AVATAR);
+const interactionCount = computed(() => {
+  if (props.post.post_type === 'question') {
+    return Number(props.post.answers_count ?? props.post.comments_count ?? 0);
+  }
+  return Number(props.post.comments_count ?? props.post.answers_count ?? 0);
+});
 
 function go() {
   if (props.post.post_type === 'question') {
@@ -95,7 +103,8 @@ async function toggleCollect(e) {
     <div class="row-bottom">
       <div class="author">
         <div class="avatar" :class="{ 'avatar-anon': isAnonymous }">
-          <img v-if="isAnonymous" class="avatar-img" src="/anonymous-avatar.svg" alt="" />
+          <img v-if="isAnonymous" class="avatar-img" :src="displayAvatar" alt="" />
+          <img v-else-if="post.avatar_url" class="avatar-img" :src="post.avatar_url" alt="" />
           <template v-else>{{ (post.username || '?').slice(0, 1) }}</template>
         </div>
         <span>{{ post.username }}</span>
@@ -123,7 +132,7 @@ async function toggleCollect(e) {
           <Star class="meta-ic" :size="16" :fill="collected ? 'currentColor' : 'none'" />
           <span class="meta-num">{{ post.collects_count ?? 0 }}</span>
         </button>
-        <span class="meta-readonly"><MessageCircle :size="16" /> {{ post.comments_count ?? post.answers_count ?? 0 }}</span>
+        <span class="meta-readonly"><MessageCircle :size="16" /> {{ interactionCount }}</span>
         <span class="time">{{ rel(post.created_at) }}</span>
       </div>
     </div>

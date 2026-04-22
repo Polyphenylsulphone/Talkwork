@@ -7,6 +7,7 @@ import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { toast } from '../stores/toast';
 import { collegeLabel, collegeColor } from '../constants';
+import { ANONYMOUS_AVATAR } from '../constants/defaultAvatars';
 import { formatCommentTime } from '../utils/time';
 
 const route = useRoute();
@@ -27,6 +28,7 @@ const editDraft = ref('');
 
 const safeQ = computed(() => DOMPurify.sanitize(data.value?.post?.content || ''));
 const postAnonymous = computed(() => !!Number(data.value?.post?.is_anonymous));
+const postAvatar = computed(() => data.value?.post?.avatar_url || ANONYMOUS_AVATAR);
 
 const answers = computed(() => {
   const arr = [...(data.value?.answers || [])];
@@ -212,7 +214,7 @@ function canManage(a) {
           </div>
           <div class="q-author">
             <div class="q-avatar" :class="{ 'q-avatar-anon': postAnonymous }">
-              <img v-if="postAnonymous" class="q-avatar-img" src="/anonymous-avatar.svg" alt="" />
+              <img v-if="postAnonymous" class="q-avatar-img" :src="postAvatar" alt="" />
               <template v-else>{{ data.post.username?.slice(0, 1) }}</template>
             </div>
             <span class="muted q-author-name">{{ data.post.username }}</span>

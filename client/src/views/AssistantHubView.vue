@@ -49,9 +49,10 @@ const cards = [
 
 <style scoped>
 .hero {
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  margin-bottom: 12px;
+  padding: 20px 24px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  margin-bottom: 16px;
 }
 .hero h1 {
   margin: 0 0 8px;
@@ -74,44 +75,48 @@ const cards = [
 }
 .card {
   text-align: left;
-  padding: 14px;
+  padding: 20px;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  transition: transform 0.15s ease;
+  border: 1px solid var(--border-primary);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: color-mix(in srgb, var(--tw-primary) 30%, transparent);
 }
 .emoji {
-  font-size: 30px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--tw-primary) 8%, transparent);
   color: var(--tw-primary);
+  margin-bottom: 16px;
+  transition: transform 0.3s ease;
+}
+.card:hover .emoji {
+  transform: scale(1.1) rotate(-5deg);
 }
 .t {
-  margin-top: 8px;
   font-weight: 900;
-  font-size: 16px;
+  font-size: 18px;
+  margin-bottom: 8px;
 }
 .d {
-  margin-top: 8px;
   color: var(--tw-muted);
-  line-height: 1.55;
-  font-size: 13px;
-}
-:root[data-theme='dark'] .card:hover {
-  background: rgba(30, 41, 59, 0.85);
-}
-:root[data-theme='dark'] .t,
-:root[data-theme='dark'] .d {
-  color: #e9f0f7;
-}
-:root[data-theme='dark'] .card:hover .t,
-:root[data-theme='dark'] .card:hover .d {
-  color: #1e293b;
+  line-height: 1.6;
+  font-size: 14px;
 }
 .hist {
-  margin-top: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .h {
   font-weight: 900;
@@ -119,16 +124,22 @@ const cards = [
 }
 .row {
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-soft);
   border-radius: 14px;
-  padding: 12px;
+  padding: 14px 16px;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   cursor: pointer;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+.row:hover {
+  transform: translateX(4px);
+  border-color: color-mix(in srgb, var(--tw-primary) 30%, transparent);
+  background: color-mix(in srgb, var(--tw-primary) 4%, var(--bg-soft));
 }
 .t2 {
   font-weight: 900;

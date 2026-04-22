@@ -8,8 +8,9 @@
   --text-secondary: #6b7280;
   --text-strong: #0f172a;
   --border-primary: rgba(255, 255, 255, 0.55);
-  --border-secondary: rgba(15, 23, 42, 0.14);
-  --shadow-primary: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --border-secondary: rgba(15, 23, 42, 0.1);
+  --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.1);
   --input-bg: rgba(255, 255, 255, 0.75);
   --input-border: rgba(0, 0, 0, 0.08);
   --surface-nav: #f8fbff;
@@ -38,26 +39,21 @@
   --bg-elevated: rgba(15, 23, 42, 0.76);
   --bg-soft: rgba(15, 23, 42, 0.68);
   --bg-muted: rgba(96, 165, 250, 0.14);
-  /* 正文与标题：略提亮，避免灰阶发闷；不用纯白，减轻刺眼感 */
-  --text-primary: #e9f0f7;
-  --text-secondary: #b9cadf;
-  --text-strong: #f4f7fb;
-  --border-primary: rgba(148, 163, 184, 0.22);
-  --border-secondary: rgba(148, 163, 184, 0.2);
-  --shadow-primary: 0 10px 30px rgba(0, 0, 0, 0.34);
+  --text-primary: #e5eefb;
+  --text-secondary: #9fb1c7;
+  --text-strong: #f8fbff;
+  --border-primary: rgba(148, 163, 184, 0.18);
+  --border-secondary: rgba(148, 163, 184, 0.12);
+  --shadow-primary: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 16px 56px rgba(0, 0, 0, 0.5);
   --input-bg: rgba(15, 23, 42, 0.72);
   --input-border: rgba(148, 163, 184, 0.2);
-  --surface-nav: rgba(12, 20, 36, 0.96);
+  --surface-nav: rgba(10, 18, 34, 0.92);
   --surface-tooltip: rgba(248, 250, 252, 0.96);
   --surface-tooltip-text: #0f172a;
-  /* 侧栏图标底与线色：略浅于背景，glyph 用柔亮灰蓝，对比清晰但不晃眼 */
-  --icon-soft: rgba(58, 73, 94, 0.55);
-  --icon-accent: #e4eaf4;
-  /* 暗色下链接/强调色略提亮，在深蓝顶栏上仍可辨 */
-  --tw-primary: #5d9cf5;
-  --tw-primary-soft: rgba(93, 156, 245, 0.16);
-  --tw-text: var(--text-primary);
-  --tw-muted: var(--text-secondary);
+  --icon-soft: rgba(30, 41, 59, 0.9);
+  --icon-accent: #c7d7f4;
+  --tw-primary-soft: rgba(59, 130, 246, 0.14);
 }
 
 *,
@@ -109,30 +105,37 @@ a {
   -webkit-backdrop-filter: var(--tw-blur);
   border-radius: var(--tw-radius-card);
   box-shadow: var(--tw-shadow);
+  border: 1px solid var(--border-primary);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .tw-btn {
   border: none;
   border-radius: var(--tw-radius-btn);
-  padding: 10px 16px;
+  padding: 10px 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .tw-btn:active {
-  transform: translateY(1px);
+  transform: translateY(2px) scale(0.98);
 }
 
 .tw-btn-primary {
   background: linear-gradient(135deg, #1a56db, #3b82f6);
   color: #fff;
-  box-shadow: 0 8px 20px rgba(26, 86, 219, 0.25);
+  box-shadow: 0 4px 14px rgba(26, 86, 219, 0.3);
 }
 
-:root[data-theme='dark'] .tw-btn-primary {
-  background: linear-gradient(135deg, #2563eb, #5d9cf5);
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
+.tw-btn-primary:hover {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  box-shadow: 0 6px 20px rgba(26, 86, 219, 0.4);
+  transform: translateY(-1px);
 }
 
 .tw-btn-ghost {
@@ -141,10 +144,16 @@ a {
   border: 1px solid color-mix(in srgb, var(--tw-primary) 15%, transparent);
 }
 
+.tw-btn-ghost:hover {
+  background: color-mix(in srgb, var(--tw-primary) 8%, var(--bg-soft));
+  border-color: color-mix(in srgb, var(--tw-primary) 30%, transparent);
+  transform: translateY(-1px);
+}
+
 .tw-input {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
   border: 1px solid var(--input-border);
   background: var(--input-bg);
   color: var(--text-primary);
@@ -162,8 +171,8 @@ textarea.tw-input {
 }
 
 .tw-input:focus {
-  border-color: rgba(26, 86, 219, 0.45);
-  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+  border-color: var(--tw-primary);
+  box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15);
 }
 
 .tw-input.err {

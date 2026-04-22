@@ -430,19 +430,20 @@ function goInterview() {
   }
 }
 .form {
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 20px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .bar {
   display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 8px;
-  padding: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.26);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.62);
+  margin-bottom: 16px;
+  padding: 10px;
+  border: 1px solid var(--border-secondary);
+  border-radius: 14px;
+  background: var(--bg-soft);
 }
 .bar-group {
   display: flex;
@@ -478,9 +479,11 @@ function goInterview() {
   box-shadow: 0 4px 12px rgba(26, 86, 219, 0.18);
 }
 .drafts {
-  margin-bottom: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-soft);
+  border-radius: 12px;
+  padding: 12px;
 }
 .ditem {
   display: grid;
@@ -562,19 +565,6 @@ function goInterview() {
   font-weight: 900;
   color: var(--tw-muted);
 }
-:root[data-theme='dark'] .lbl,
-:root[data-theme='dark'] .tip,
-:root[data-theme='dark'] .muted {
-  color: #b9cadf;
-}
-:root[data-theme='dark'] .btn-lite {
-  background: rgba(30, 41, 59, 0.85);
-  color: #e9f0f7;
-  border-color: rgba(93, 156, 245, 0.25);
-}
-:root[data-theme='dark'] .bar {
-  background: rgba(30, 41, 59, 0.75);
-}
 .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -600,10 +590,6 @@ function goInterview() {
 .tpl button.on {
   border-color: rgba(26, 86, 219, 0.35);
   background: rgba(26, 86, 219, 0.1);
-}
-:root[data-theme='dark'] .tpl button {
-  background: rgba(30, 41, 59, 0.75);
-  color: #e9f0f7;
 }
 .tip {
   margin-top: 8px;
@@ -665,14 +651,12 @@ function goInterview() {
   color: #1e3a8a;
 }
 .preview {
-  padding: 12px;
+  padding: 16px;
   position: sticky;
   top: 76px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
   overflow: hidden;
-}
-:root[data-theme='dark'] .preview {
-  background: rgba(30, 41, 59, 0.75);
 }
 .paper {
   background: #fff;
@@ -862,10 +846,6 @@ function goInterview() {
   background: #fff;
   padding: 5px 8px;
   cursor: pointer;
-}
-:root[data-theme='dark'] .icon-x {
-  background: #1e293b;
-  color: #e9f0f7;
 }
 .modal-list {
   margin-top: 10px;

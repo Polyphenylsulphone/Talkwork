@@ -7,6 +7,7 @@ import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { toast } from '../stores/toast';
 import { collegeLabel, collegeColor } from '../constants';
+import { ANONYMOUS_AVATAR } from '../constants/defaultAvatars';
 import { formatCommentTime } from '../utils/time';
 
 const route = useRoute();
@@ -23,6 +24,7 @@ const commentCollected = ref(new Set());
 
 const safeHtml = computed(() => DOMPurify.sanitize(data.value?.post?.content || ''));
 const postAnonymous = computed(() => !!Number(data.value?.post?.is_anonymous));
+const postAvatar = computed(() => data.value?.post?.avatar_url || ANONYMOUS_AVATAR);
 const threadedComments = computed(() => {
   const list = Array.isArray(data.value?.comments) ? data.value.comments : [];
   const roots = [];
@@ -194,7 +196,7 @@ function setupArticleImages() {
         </div>
         <div class="author">
           <div class="avatar" :class="{ 'avatar-anon': postAnonymous }">
-            <img v-if="postAnonymous" class="avatar-img" src="/anonymous-avatar.svg" alt="" />
+            <img v-if="postAnonymous" class="avatar-img" :src="postAvatar" alt="" />
             <template v-else>{{ data.post.username?.slice(0, 1) }}</template>
           </div>
           <div>

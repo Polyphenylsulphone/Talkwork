@@ -370,6 +370,35 @@ function cancel() {
     </div>
 
     <div class="card tw-card">
+      <div class="voice-hero">
+        <button
+          v-if="!listening"
+          class="mic-hero-btn"
+          type="button"
+          :disabled="!speechSupported || !!aiLoading || speechBusy"
+          :title="speechSupported ? '语音转文字并整理为经验贴' : '当前浏览器不支持语音识别'"
+          @click="startVoiceInput"
+        >
+          <Mic :size="20" />
+          <span>{{ speechSupported ? '语音输入，AI 自动整理' : '浏览器不支持语音' }}</span>
+        </button>
+        <button v-else class="mic-hero-btn stop" type="button" :disabled="speechBusy" title="停止录音并生成经验贴" @click="stopVoiceInput">
+          <Square :size="18" />
+          <span>停止录音并整理</span>
+        </button>
+        <div class="voice-hero-tip">
+          {{
+            listening
+              ? `录音中... ${speechTranscript || speechInterim || '请开始说话'}`
+              : speechBusy
+                ? 'AI 正在整理为「背景-过程-经验」...'
+                : speechSupported
+                  ? '点击麦克风：录音 → 转文字 → AI 生成经验贴'
+                  : '当前浏览器不支持 Web Speech API'
+          }}
+        </div>
+      </div>
+
       <label class="lbl">标题（最多 50 字）</label>
       <input v-model="title" class="tw-input" maxlength="50" placeholder="起一个让人想点进来的标题" />
 
@@ -389,32 +418,6 @@ function cancel() {
 
       <label class="lbl">正文（支持加粗/斜体/标题/列表/图片）</label>
       <QuillEditor ref="editor" v-model:content="content" content-type="html" :options="options" class="quill" />
-      <div class="voice-row">
-        <button
-          v-if="!listening"
-          class="mic-btn"
-          type="button"
-          :disabled="!speechSupported || !!aiLoading || speechBusy"
-          :title="speechSupported ? '语音转文字并整理为经验贴' : '当前浏览器不支持语音识别'"
-          @click="startVoiceInput"
-        >
-          <Mic :size="16" />
-        </button>
-        <button v-else class="mic-btn stop" type="button" :disabled="speechBusy" title="停止录音并生成经验贴" @click="stopVoiceInput">
-          <Square :size="15" />
-        </button>
-        <span class="voice-tip">
-          {{
-            listening
-              ? `录音中... ${speechTranscript || speechInterim || '请开始说话'}`
-              : speechBusy
-                ? 'AI 正在整理为「背景-过程-经验」'
-                : speechSupported
-                  ? '点击麦克风：录音 → 转文字 → AI 生成经验贴'
-                  : '当前浏览器不支持 Web Speech API'
-          }}
-        </span>
-      </div>
 
       <div class="tip">草稿每30秒自动保存到本地（最多10条） · 当前登录：{{ auth.user?.username }}</div>
     </div>
@@ -506,35 +509,56 @@ function cancel() {
   color: var(--tw-muted);
   font-size: 12px;
 }
-.voice-row {
-  margin-top: 10px;
+.voice-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(26, 86, 219, 0.04) 0%, rgba(26, 86, 219, 0.08) 100%);
+  border-radius: 16px;
+  border: 1px dashed rgba(26, 86, 219, 0.25);
+  gap: 12px;
+}
+.mic-hero-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-.mic-btn {
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(26, 86, 219, 0.2);
+  gap: 8px;
+  padding: 12px 28px;
+  border: none;
   border-radius: 999px;
-  background: rgba(26, 86, 219, 0.08);
-  color: #1a56db;
-  display: inline-grid;
-  place-items: center;
+  background: #1a56db;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(26, 86, 219, 0.25);
 }
-.mic-btn.stop {
-  border-color: rgba(239, 68, 68, 0.28);
-  background: rgba(239, 68, 68, 0.1);
-  color: #b91c1c;
+.mic-hero-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(26, 86, 219, 0.35);
 }
-.mic-btn:disabled {
-  opacity: 0.55;
+.mic-hero-btn.stop {
+  background: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+.mic-hero-btn.stop:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+.mic-hero-btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
-.voice-tip {
-  font-size: 12px;
-  color: var(--tw-muted);
+.voice-hero-tip {
+  font-size: 13px;
+  color: #475569;
+  text-align: center;
+  max-width: 90%;
+  line-height: 1.5;
+  min-height: 20px;
 }
 .drafts {
   border-radius: 0;

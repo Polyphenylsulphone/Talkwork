@@ -6,6 +6,7 @@ import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { toast } from '../stores/toast';
 import { COLLEGES } from '../constants';
+import { DEFAULT_AVATARS } from '../constants/defaultAvatars';
 import siteLogo from '../assets/site-logo.png';
 
 const route = useRoute();
@@ -38,6 +39,11 @@ const collegeOptions = ref(
 );
 const onboardingOpen = ref(false);
 const recommendedInterview = ref(null);
+const defaultAvatarOptions = ref([...DEFAULT_AVATARS]);
+const registerAvatarMode = ref('default');
+const selectedDefaultAvatar = ref(DEFAULT_AVATARS[0] || '');
+const registerAvatarBlob = ref(null);
+const registerAvatarPreview = ref(DEFAULT_AVATARS[0] || '');
 const ONBOARDING_SEEN_KEY = 'tw_onboarding_seen';
 
 const pwdOk = computed(() => {
@@ -62,6 +68,18 @@ onMounted(async () => {
     }
   } catch {
     /* fallback to local placeholders */
+  }
+  try {
+    const avatars = unwrap(await http.get('/auth/default-avatars'));
+    if (Array.isArray(avatars) && avatars.length) {
+      defaultAvatarOptions.value = avatars.map((item) => String(item || '').trim()).filter(Boolean);
+      if (!selectedDefaultAvatar.value) selectedDefaultAvatar.value = defaultAvatarOptions.value[0];
+      if (registerAvatarMode.value === 'default') {
+        registerAvatarPreview.value = selectedDefaultAvatar.value;
+      }
+    }
+  } catch {
+    /* fallback to local avatar list */
   }
 });
 
@@ -122,11 +140,25 @@ async function onRegister() {
     return;
   }
   try {
+    let avatarUrl = '';
+    if (registerAvatarMode.value === 'default') {
+      avatarUrl = selectedDefaultAvatar.value;
+    } else if (registerAvatarBlob.value) {
+      const fd = new FormData();
+      fd.append('file', new File([registerAvatarBlob.value], 'avatar.png', { type: registerAvatarBlob.value.type || 'image/png' }));
+      const { url } = unwrap(await http.post('/upload/image', fd, { headers: { 'Content-Type': 'multipart/form-data' } }));
+      avatarUrl = url;
+    }
+    if (!avatarUrl) {
+      toast.error('请选择默认头像或上传头像');
+      return;
+    }
     await http.post('/auth/register', {
       username: username.value.trim(),
       code: registerCode.value.trim(),
       password: password.value,
       college: college.value,
+      avatar_url: avatarUrl,
     });
     const data = unwrap(await http.post('/auth/login', { username: username.value.trim(), password: password.value }));
     auth.setSession({ token: data.token, user: data.user });
@@ -212,6 +244,29 @@ function switchTab(t) {
   forgotMode.value = false;
   resetStep.value = 1;
   registerCode.value = '';
+  registerAvatarMode.value = 'default';
+  selectedDefaultAvatar.value = defaultAvatarOptions.value[0] || DEFAULT_AVATARS[0] || '';
+  registerAvatarBlob.value = null;
+  registerAvatarPreview.value = selectedDefaultAvatar.value;
+}
+
+function selectRegisterDefaultAvatar(url) {
+  selectedDefaultAvatar.value = url;
+  registerAvatarMode.value = 'default';
+  registerAvatarBlob.value = null;
+  registerAvatarPreview.value = url;
+}
+
+function onRegisterAvatarUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    toast.error('请选择图片文件');
+    return;
+  }
+  registerAvatarMode.value = 'upload';
+  registerAvatarBlob.value = file;
+  registerAvatarPreview.value = URL.createObjectURL(file);
 }
 
 function skipOnboarding() {
@@ -441,6 +496,32 @@ function startResetCooldown(seconds = 60) {
               <div v-if="college === it.id" class="check"><Check :size="12" /></div>
             </button>
           </div>
+          <div class="step-hint avatar-step">选择头像</div>
+          <div class="avatar-mode">
+            <button type="button" class="tw-btn tw-btn-ghost" :class="{ on: registerAvatarMode === 'default' }" @click="registerAvatarMode = 'default'">
+              默认头像
+            </button>
+            <label class="tw-btn tw-btn-ghost" :class="{ on: registerAvatarMode === 'upload' }">
+              上传头像
+              <input type="file" accept="image/*" hidden @change="onRegisterAvatarUpload" />
+            </label>
+          </div>
+          <div v-if="registerAvatarMode === 'default'" class="avatar-grid">
+            <button
+              v-for="url in defaultAvatarOptions"
+              :key="url"
+              type="button"
+              class="avatar-item"
+              :class="{ on: selectedDefaultAvatar === url }"
+              @click="selectRegisterDefaultAvatar(url)"
+            >
+              <img :src="url" alt="默认头像" loading="lazy" />
+            </button>
+          </div>
+          <div v-else class="upload-preview">
+            <img v-if="registerAvatarPreview" :src="registerAvatarPreview" alt="上传头像预览" />
+            <span v-else>请上传头像</span>
+          </div>
           <button class="tw-btn tw-btn-primary full" type="button" @click="onRegister">完成注册</button>
           <button class="tw-btn tw-btn-ghost full" type="button" @click="step = 1">返回上一步</button>
         </template>
@@ -665,6 +746,55 @@ function startResetCooldown(seconds = 60) {
 }
 .step-hint {
   font-weight: 800;
+}
+.avatar-step {
+  margin-top: 4px;
+}
+.avatar-mode {
+  display: flex;
+  gap: 8px;
+}
+.avatar-mode .tw-btn.on {
+  border-color: rgba(26, 86, 219, 0.35);
+  background: rgba(26, 86, 219, 0.1);
+}
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.avatar-item {
+  border: 2px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+}
+.avatar-item.on {
+  border-color: rgba(26, 86, 219, 0.8);
+}
+.avatar-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+.upload-preview {
+  width: 90px;
+  height: 90px;
+  border-radius: 999px;
+  border: 2px solid rgba(26, 86, 219, 0.2);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--tw-muted);
+  font-size: 12px;
+}
+.upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .guide-mask {
   position: fixed;

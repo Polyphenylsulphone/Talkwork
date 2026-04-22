@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { Sparkles, Zap, Flame } from 'lucide-vue-next';
 import { http, unwrap } from '../api/http';
 import { toast } from '../stores/toast';
 import InterviewStartingOverlay from '../components/InterviewStartingOverlay.vue';
@@ -25,18 +26,24 @@ const modes = [
     title: '小白模式',
     desc: '循序渐进、温柔提示，适合第一次练面试的你。',
     tone: '像朋友陪练',
+    icon: Sparkles,
+    color: '#10b981'
   },
   {
     id: 'pro',
     title: '大佬模式',
     desc: '标准流程 + 追问，更贴近真实面试节奏。',
     tone: '认真但不冰冷',
+    icon: Zap,
+    color: '#3b82f6'
   },
   {
     id: 'pressure',
     title: '压力模式',
     desc: '更严格的反馈节奏（演示版以文案提示为主）。',
     tone: '帮你练习稳定感',
+    icon: Flame,
+    color: '#f97316'
   },
 ];
 
@@ -113,7 +120,12 @@ async function startInterview() {
         :class="{ on: selectedMode === m.id }"
         @click="selectedMode = m.id"
       >
-        <div class="tag">{{ m.tone }}</div>
+        <div class="card-header">
+          <div class="icon-wrap" :style="{ color: m.color, backgroundColor: m.color + '1a' }">
+            <component :is="m.icon" :size="22" />
+          </div>
+          <div class="tag">{{ m.tone }}</div>
+        </div>
         <div class="t">{{ m.title }}</div>
         <div class="d">{{ m.desc }}</div>
       </button>
@@ -180,9 +192,10 @@ async function startInterview() {
 
 <style scoped>
 .hero {
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  margin-bottom: 12px;
+  padding: 20px 24px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  margin-bottom: 16px;
 }
 .hero h1 {
   margin: 0 0 8px;
@@ -205,61 +218,65 @@ async function startInterview() {
 }
 .card {
   text-align: left;
-  padding: 14px;
+  padding: 18px;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  transition: transform 0.15s ease;
+  border: 2px solid transparent;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
 }
 .card.on {
-  border-color: rgba(26, 86, 219, 0.45);
-  box-shadow: 0 10px 24px rgba(26, 86, 219, 0.12);
+  border-color: var(--tw-primary);
+  background: color-mix(in srgb, var(--tw-primary) 4%, var(--tw-card));
+  box-shadow: 0 12px 32px rgba(26, 86, 219, 0.15);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+.card:hover .icon-wrap {
+  transform: scale(1.1) rotate(5deg);
 }
 .tag {
   display: inline-block;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 800;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(26, 86, 219, 0.1);
-  color: #1a56db;
+  background: color-mix(in srgb, var(--tw-primary) 10%, transparent);
+  color: var(--tw-primary);
 }
 .t {
-  margin-top: 10px;
   font-weight: 900;
-  font-size: 16px;
+  font-size: 18px;
+  margin-bottom: 6px;
 }
 .d {
-  margin-top: 8px;
   color: var(--tw-muted);
-  line-height: 1.55;
+  line-height: 1.6;
   font-size: 13px;
-}
-:root[data-theme='dark'] .tag {
-  background: rgba(93, 156, 245, 0.2);
-  color: #5d9cf5;
-}
-:root[data-theme='dark'] .card:hover {
-  background: rgba(30, 41, 59, 0.85);
-}
-:root[data-theme='dark'] .t,
-:root[data-theme='dark'] .d {
-  color: #e9f0f7;
-}
-:root[data-theme='dark'] .card:hover .t,
-:root[data-theme='dark'] .card:hover .d {
-  color: #1e293b;
-}
-:root[data-theme='dark'] .card:hover .tag {
-  background: rgba(93, 156, 245, 0.35);
-  color: #1e293b;
+  flex: 1;
 }
 .bind {
-  margin-top: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .bind h3 {
   margin: 0 0 10px;

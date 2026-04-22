@@ -5,6 +5,7 @@ import { Check, Upload, X } from 'lucide-vue-next';
 import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { COLLEGES } from '../constants';
+import { DEFAULT_AVATARS } from '../constants/defaultAvatars';
 import { toast } from '../stores/toast';
 
 const router = useRouter();
@@ -18,6 +19,9 @@ const editForm = reactive({
 });
 const avatarPreview = ref('');
 const avatarBlob = ref(null);
+const avatarMode = ref('default');
+const selectedDefaultAvatar = ref('');
+const defaultAvatarOptions = ref([...DEFAULT_AVATARS]);
 const cropOpen = ref(false);
 const cropSrc = ref('');
 const cropZoom = ref(1);
@@ -26,11 +30,25 @@ const cropY = ref(0);
 
 onMounted(async () => {
   const me = unwrap(await http.get('/auth/me'));
+  try {
+    const avatars = unwrap(await http.get('/auth/default-avatars'));
+    if (Array.isArray(avatars) && avatars.length) {
+      defaultAvatarOptions.value = avatars.map((item) => String(item || '').trim()).filter(Boolean);
+    }
+  } catch {
+    /* fallback to local defaults */
+  }
   auth.patchUser(me);
   editForm.username = auth.user?.username || '';
   editForm.college = auth.user?.college || 'other';
   editForm.bio = auth.user?.bio || '';
-  avatarPreview.value = auth.user?.avatar_url || '';
+  avatarPreview.value = auth.user?.avatar_url || defaultAvatarOptions.value[0] || '';
+  if (defaultAvatarOptions.value.includes(avatarPreview.value)) {
+    avatarMode.value = 'default';
+    selectedDefaultAvatar.value = avatarPreview.value;
+  } else {
+    avatarMode.value = 'upload';
+  }
 });
 
 function goBack() {
@@ -86,6 +104,7 @@ async function applyCrop() {
   ctx.restore();
   const blob = await new Promise((resolve) => canvas.toBlob((b) => resolve(b), 'image/png', 0.92));
   if (!blob) return toast.error('裁剪失败，请重试');
+  avatarMode.value = 'upload';
   avatarBlob.value = blob;
   avatarPreview.value = URL.createObjectURL(blob);
   closeCropper();
@@ -106,7 +125,9 @@ async function saveProfile() {
   };
   saving.value = true;
   try {
-    if (avatarBlob.value) {
+    if (avatarMode.value === 'default') {
+      payload.avatar_url = selectedDefaultAvatar.value || defaultAvatarOptions.value[0] || '';
+    } else if (avatarBlob.value) {
       const fd = new FormData();
       fd.append('file', new File([avatarBlob.value], 'avatar.png', { type: 'image/png' }));
       const { url } = unwrap(await http.post('/upload/image', fd, { headers: { 'Content-Type': 'multipart/form-data' } }));
@@ -119,6 +140,19 @@ async function saveProfile() {
   } finally {
     saving.value = false;
   }
+}
+
+function chooseDefaultAvatar(url) {
+  avatarMode.value = 'default';
+  selectedDefaultAvatar.value = url;
+  avatarPreview.value = url;
+  avatarBlob.value = null;
+}
+
+function switchToDefaultAvatar() {
+  const next = selectedDefaultAvatar.value || defaultAvatarOptions.value[0] || '';
+  if (!next) return;
+  chooseDefaultAvatar(next);
 }
 </script>
 
@@ -137,11 +171,28 @@ async function saveProfile() {
             <img v-if="avatarPreview" :src="avatarPreview" alt="头像预览" />
             <span v-else>{{ editForm.username?.slice(0, 1) || '?' }}</span>
           </div>
-          <label class="tw-btn tw-btn-ghost up-btn">
-            <Upload :size="14" />
-            更换头像
-            <input type="file" accept="image/*" hidden @change="openCropper" />
-          </label>
+          <div class="avatar-actions">
+            <button class="tw-btn tw-btn-ghost mode-btn" :class="{ on: avatarMode === 'default' }" type="button" @click="switchToDefaultAvatar">
+              默认头像
+            </button>
+            <label class="tw-btn tw-btn-ghost up-btn mode-btn" :class="{ on: avatarMode === 'upload' }">
+              <Upload :size="14" />
+              上传头像
+              <input type="file" accept="image/*" hidden @change="openCropper" />
+            </label>
+          </div>
+          <div v-if="avatarMode === 'default'" class="avatar-grid">
+            <button
+              v-for="url in defaultAvatarOptions"
+              :key="url"
+              type="button"
+              class="avatar-item"
+              :class="{ on: selectedDefaultAvatar === url }"
+              @click="chooseDefaultAvatar(url)"
+            >
+              <img :src="url" alt="默认头像" loading="lazy" />
+            </button>
+          </div>
         </div>
         <div class="right">
           <label class="lbl">昵称</label>
@@ -267,6 +318,37 @@ async function saveProfile() {
 }
 .up-btn {
   width: fit-content;
+}
+.avatar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mode-btn.on {
+  border-color: rgba(26, 86, 219, 0.35);
+  background: rgba(26, 86, 219, 0.1);
+}
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.avatar-item {
+  border: 2px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px;
+  cursor: pointer;
+}
+.avatar-item.on {
+  border-color: rgba(26, 86, 219, 0.85);
+}
+.avatar-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
 }
 .bio-input {
   min-height: 90px;

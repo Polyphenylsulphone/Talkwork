@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import { query } from '../db.js';
 import { ok, fail } from '../util/response.js';
 import { signToken, requireAuth } from '../middleware/auth.js';
+import { DEFAULT_AVATAR_URLS, isAllowedAvatarUrl } from '../util/defaultAvatar.js';
 
 const router = Router();
 const RESET_CODE_TTL_MINUTES = 5;
@@ -189,9 +190,18 @@ router.get('/college-options', async (_req, res) => {
   }
 });
 
+router.get('/default-avatars', async (_req, res) => {
+  try {
+    res.json(ok(DEFAULT_AVATAR_URLS));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json(fail(500, '服务器错误'));
+  }
+});
+
 router.post('/register', async (req, res) => {
   try {
-    const { username, code, password, college } = req.body || {};
+    const { username, code, password, college, avatar_url } = req.body || {};
     const phone = normalizePhone(username);
     if (!phone || !code || !password || !college) {
       return res.status(400).json(fail(400, '参数不完整'));
@@ -203,6 +213,9 @@ router.post('/register', async (req, res) => {
     const allowed = ['engineering', 'science', 'liberal', 'other'];
     if (!allowed.includes(college)) {
       return res.status(400).json(fail(400, '请选择你的学院'));
+    }
+    if (avatar_url != null && !isAllowedAvatarUrl(avatar_url)) {
+      return res.status(400).json(fail(400, '头像地址不合法'));
     }
     const codeRows = await query(
       `SELECT id, code_hash, expires_at
@@ -222,12 +235,13 @@ router.post('/register', async (req, res) => {
       return res.status(400).json(fail(400, '验证码错误'));
     }
     const hash = await bcrypt.hash(password, 10);
-    await query('INSERT INTO users (username, student_no, email, password_hash, college) VALUES (?,?,?,?,?)', [
+    await query('INSERT INTO users (username, student_no, email, password_hash, college, avatar_url) VALUES (?,?,?,?,?,?)', [
       phone,
       phone,
       `${phone}@example.invalid`,
       hash,
       college,
+      isAllowedAvatarUrl(avatar_url) ? String(avatar_url).trim() : DEFAULT_AVATAR_URLS[0],
     ]);
     await query('UPDATE register_sms_codes SET used_at = NOW() WHERE id = ?', [codeTicket.id]);
     res.json(ok({ message: '注册成功' }));
@@ -461,7 +475,15 @@ router.patch('/me', requireAuth, async (req, res) => {
       await query('UPDATE users SET username = ? WHERE id = ?', [u, req.user.id]);
     }
     if (avatar_url != null) {
-      await query('UPDATE users SET avatar_url = ? WHERE id = ?', [String(avatar_url), req.user.id]);
+      const nextAvatar = String(avatar_url || '').trim();
+      if (!nextAvatar) {
+        await query('UPDATE users SET avatar_url = NULL WHERE id = ?', [req.user.id]);
+      } else {
+        if (!isAllowedAvatarUrl(nextAvatar)) {
+          return res.status(400).json(fail(400, '头像地址不合法'));
+        }
+        await query('UPDATE users SET avatar_url = ? WHERE id = ?', [nextAvatar, req.user.id]);
+      }
     }
     if (bio != null) {
       await query('UPDATE users SET bio = ? WHERE id = ?', [String(bio).trim().slice(0, 200), req.user.id]);

@@ -379,61 +379,55 @@ function goInterview() {
 
 <style scoped>
 .wrap {
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 20px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .bar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 .import-box {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-soft);
+  border-radius: 12px;
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 .import-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
+  color: var(--tw-primary);
 }
 .import-row {
   display: grid;
   gap: 8px;
 }
 .import-label {
-  font-size: 12px;
-  color: var(--tw-muted);
+  font-size: 13px;
+  color: var(--text-primary);
   font-weight: 800;
 }
 .lbl {
   display: block;
-  margin: 10px 0 8px;
+  margin: 16px 0 8px;
   font-weight: 900;
-  font-size: 12px;
-  color: var(--tw-muted);
-}
-:root[data-theme='dark'] .lbl,
-:root[data-theme='dark'] .import-label,
-:root[data-theme='dark'] .tip {
-  color: #b9cadf;
-}
-:root[data-theme='dark'] .out,
-:root[data-theme='dark'] .import-box,
-:root[data-theme='dark'] .loading-box {
-  background: rgba(30, 41, 59, 0.75);
+  font-size: 13px;
+  color: var(--text-primary);
 }
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 .sm {
   max-width: 420px;
-  padding: 10px;
+  padding: 12px;
 }
 .up-btn {
   width: fit-content;
@@ -444,50 +438,63 @@ function goInterview() {
 }
 .full {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 16px;
 }
 .loading-box {
-  margin-top: 12px;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-soft);
+  border-radius: 16px;
+  text-align: center;
 }
 .loading-text {
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  color: var(--tw-primary);
 }
 .pg-wrap {
-  height: 8px;
-  background: rgba(148, 163, 184, 0.24);
+  height: 10px;
+  background: var(--border-secondary);
   border-radius: 999px;
   overflow: hidden;
 }
 .pg-inner {
   height: 100%;
-  background: linear-gradient(90deg, #1a56db, #3b82f6);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #1a56db, #60a5fa);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .pg-num {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 800;
   color: var(--tw-muted);
 }
 .out {
-  margin-top: 12px;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-soft);
+  border-radius: 16px;
 }
 .h {
   font-weight: 900;
-  margin-bottom: 8px;
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: var(--text-strong);
 }
 .pre {
   margin: 0;
   white-space: pre-wrap;
   line-height: 1.65;
-  color: #0f172a;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.4);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-secondary);
 }
 .preview {
-  margin-top: 10px;
+  margin-top: 16px;
 }
 .paper {
   background: #fff;
@@ -583,17 +590,23 @@ function goInterview() {
 .cmp {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 16px;
+  margin-top: 12px;
+}
+@media (min-width: 768px) {
+  .cmp {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 .cap {
-  font-size: 12px;
-  color: var(--tw-muted);
-  font-weight: 800;
-  margin-bottom: 4px;
+  font-size: 13px;
+  color: var(--tw-primary);
+  font-weight: 900;
+  margin-bottom: 8px;
 }
 .act {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 16px;
 }
 </style>

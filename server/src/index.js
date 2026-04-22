@@ -232,6 +232,20 @@ async function ensureSchemaCompat() {
       console.error('schema check failed:', e.message || e);
     }
   }
+  try {
+    await query('ALTER TABLE answer_comments ADD COLUMN parent_comment_id INT NULL');
+  } catch (e) {
+    if (!String(e?.message || '').includes('Duplicate column')) {
+      console.error('schema check failed:', e.message || e);
+    }
+  }
+  try {
+    await query('ALTER TABLE answer_comments ADD COLUMN reply_to_user_id INT NULL');
+  } catch (e) {
+    if (!String(e?.message || '').includes('Duplicate column')) {
+      console.error('schema check failed:', e.message || e);
+    }
+  }
   const adminNames = String(process.env.ADMIN_USERNAMES || '')
     .split(',')
     .map((s) => s.trim())

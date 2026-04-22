@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Mic, Volume2 } from 'lucide-vue-next';
 import Recorder from 'js-audio-recorder';
@@ -33,6 +33,7 @@ const speechRecording = ref(false);
 const speechBusy = ref(false);
 const ttsBusy = ref(false);
 const ttsAudioEl = ref(null);
+const ttsObjectUrl = ref('');
 let speechRecorder = null;
 let timer = null;
 
@@ -334,7 +335,7 @@ onMounted(async () => {
 });
 
 async function startSpeechRecording() {
-  if (!speechConfigured.value || ending.value) return;
+  if (!speechConfigured.value || ending.value || speechRecording.value) return;
   try {
     speechRecorder = new Recorder({ sampleBits: 16, sampleRate: 16000, numChannels: 1 });
     await speechRecorder.start();
@@ -364,6 +365,7 @@ async function stopSpeechRecording() {
     }
   } catch (e) {
     console.error(e);
+    toast.error(e?.message || '语音识别失败，请重试');
   } finally {
     speechBusy.value = false;
   }
@@ -383,9 +385,13 @@ async function speakQuestionText(text) {
     );
     const blob = new Blob([res.data], { type: res.headers['content-type'] || 'audio/wav' });
     const url = URL.createObjectURL(blob);
+    if (ttsObjectUrl.value) {
+      URL.revokeObjectURL(ttsObjectUrl.value);
+      ttsObjectUrl.value = '';
+    }
+    ttsObjectUrl.value = url;
     if (ttsAudioEl.value) {
       ttsAudioEl.value.pause();
-      if (ttsAudioEl.value.src?.startsWith('blob:')) URL.revokeObjectURL(ttsAudioEl.value.src);
       ttsAudioEl.value.src = url;
       await ttsAudioEl.value.play();
     } else {
@@ -447,6 +453,9 @@ async function start() {
 
 async function next() {
   if (ending.value) return;
+  if (speechRecording.value) {
+    await stopSpeechRecording();
+  }
   const q = questions.value[idx.value];
   transcript.value.push({ q, a: answer.value });
   answer.value = '';
@@ -533,6 +542,29 @@ function onJobKeydown(e) {
     jobOpen.value = false;
   }
 }
+
+onBeforeUnmount(() => {
+  if (timer) clearInterval(timer);
+  if (speechRecorder) {
+    try {
+      speechRecorder.destroy();
+    } catch {
+      /* noop */
+    }
+    speechRecorder = null;
+  }
+  if (ttsAudioEl.value) {
+    try {
+      ttsAudioEl.value.pause();
+    } catch {
+      /* noop */
+    }
+  }
+  if (ttsObjectUrl.value) {
+    URL.revokeObjectURL(ttsObjectUrl.value);
+    ttsObjectUrl.value = '';
+  }
+});
 </script>
 
 <template>
@@ -678,8 +710,9 @@ function onJobKeydown(e) {
 
 <style scoped>
 .prep {
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 20px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .prep h2 {
   margin: 0 0 8px;
@@ -741,14 +774,22 @@ function onJobKeydown(e) {
 }
 .avatar {
   margin-top: 12px;
-  padding: 12px;
+  padding: 20px;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   justify-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--border-primary);
+  background: color-mix(in srgb, var(--tw-primary) 4%, transparent);
+  border-radius: 16px;
 }
 .face {
-  font-size: 54px;
+  font-size: 64px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 .bubble {
   font-weight: 900;
@@ -764,10 +805,11 @@ function onJobKeydown(e) {
 .live .top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .grow {
   flex: 1;
@@ -792,8 +834,9 @@ function onJobKeydown(e) {
 }
 .left,
 .right {
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 16px;
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
 }
 .stage {
   border-radius: 16px;
@@ -804,17 +847,20 @@ function onJobKeydown(e) {
 .fallback-video {
   width: 100%;
   max-height: 360px;
-  border-radius: 12px;
+  border-radius: 16px;
   background: #0f172a;
   object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 .big {
   font-size: 44px;
 }
 .hint {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-secondary);
+  background: var(--bg-soft);
+  border-radius: 12px;
 }
 .q {
   font-weight: 900;
@@ -833,26 +879,44 @@ function onJobKeydown(e) {
   gap: 6px;
 }
 .log {
-  margin: 12px 0;
-  display: grid;
-  gap: 10px;
-  max-height: 220px;
-  overflow: auto;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 .item {
-  padding: 10px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.55);
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-secondary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  line-height: 1.6;
 }
 .b {
   font-size: 12px;
   font-weight: 900;
-  color: #1a56db;
-  margin-bottom: 4px;
+  color: var(--tw-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.b::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 .b.me {
-  margin-top: 8px;
+  margin-top: 12px;
   color: #ea580c;
+  border-top: 1px dashed var(--border-secondary);
+  padding-top: 12px;
 }
 .ending {
   margin-bottom: 8px;
