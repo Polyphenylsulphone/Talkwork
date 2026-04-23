@@ -379,13 +379,21 @@ function goInterview() {
 
 <style scoped>
 .wrap {
+<<<<<<< HEAD
   padding: 20px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  padding: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .bar {
   display: flex;
   gap: 12px;
+<<<<<<< HEAD
   margin-bottom: 16px;
 }
 .import-box {
@@ -396,6 +404,18 @@ function goInterview() {
   border-radius: 12px;
   display: grid;
   gap: 12px;
+=======
+  margin-bottom: 24px;
+}
+.import-box {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: none;
+  background: #F9FAFB;
+  border-radius: 16px;
+  display: grid;
+  gap: 16px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .import-title {
   font-size: 14px;

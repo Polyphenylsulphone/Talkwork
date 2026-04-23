@@ -192,14 +192,24 @@ async function startInterview() {
 
 <style scoped>
 .hero {
+<<<<<<< HEAD
   padding: 20px 24px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
   margin-bottom: 16px;
+=======
+  padding: 24px 32px;
+  border: none;
+  border-radius: 24px;
+  margin-bottom: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .hero h1 {
   margin: 0 0 8px;
-  font-size: 26px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 .muted {
   margin: 0;
@@ -209,7 +219,7 @@ async function startInterview() {
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
 }
 @media (max-width: 900px) {
   .grid {
@@ -218,6 +228,7 @@ async function startInterview() {
 }
 .card {
   text-align: left;
+<<<<<<< HEAD
   padding: 18px;
   cursor: pointer;
   border: 2px solid transparent;
@@ -233,17 +244,45 @@ async function startInterview() {
   border-color: var(--tw-primary);
   background: color-mix(in srgb, var(--tw-primary) 4%, var(--tw-card));
   box-shadow: 0 12px 32px rgba(26, 86, 219, 0.15);
+=======
+  padding: 24px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 24px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+.card.on {
+  border-color: var(--tw-primary);
+  background: #F9FAFB;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+<<<<<<< HEAD
   margin-bottom: 12px;
 }
 .icon-wrap {
   width: 44px;
   height: 44px;
   border-radius: 12px;
+=======
+  margin-bottom: 16px;
+}
+.icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,6 +293,7 @@ async function startInterview() {
 }
 .tag {
   display: inline-block;
+<<<<<<< HEAD
   font-size: 12px;
   font-weight: 800;
   padding: 4px 10px;
@@ -277,33 +317,71 @@ async function startInterview() {
   padding: 20px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: #F3F4F6;
+  color: #4B5563;
+}
+.t {
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+.d {
+  color: #6B7280;
+  line-height: 1.6;
+  font-size: 14px;
+  flex: 1;
+}
+.bind {
+  margin-top: 24px;
+  padding: 24px 32px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .bind h3 {
-  margin: 0 0 10px;
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 800;
 }
 .ways {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-bottom: 16px;
 }
 .ways button {
-  border-radius: 999px;
-  border: 1px solid rgba(26, 86, 219, 0.18);
-  background: rgba(255, 255, 255, 0.6);
-  padding: 7px 10px;
+  border-radius: 9999px;
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  padding: 8px 16px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4B5563;
+  transition: all 0.2s ease;
+}
+.ways button:hover {
+  background: #F9FAFB;
 }
 .ways button.on {
-  border-color: rgba(26, 86, 219, 0.38);
-  background: rgba(26, 86, 219, 0.12);
-  color: #1a56db;
+  border-color: var(--tw-primary);
+  background: var(--tw-primary);
+  color: #FFFFFF;
 }
 .pane {
-  margin-top: 10px;
+  margin-top: 16px;
 }
 .start-btn {
-  margin-top: 12px;
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
 }
 </style>

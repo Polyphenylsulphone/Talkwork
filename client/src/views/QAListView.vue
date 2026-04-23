@@ -34,12 +34,14 @@ onMounted(() => {
   sort.value = (route.query.sort || 'time') + '';
   q.value = (route.query.q || '') + '';
   reload();
-  window.addEventListener('scroll', onScroll);
+  document.addEventListener('scroll', onScroll, true);
 });
-onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
+onBeforeUnmount(() => document.removeEventListener('scroll', onScroll, true));
 
-function onScroll() {
-  const nearBottom = window.innerHeight + window.scrollY > document.body.scrollHeight - 220;
+function onScroll(e) {
+  const target = e.target;
+  if (!target || !target.clientHeight) return;
+  const nearBottom = target.clientHeight + target.scrollTop > target.scrollHeight - 220;
   const now = Date.now();
   if (nearBottom && now - lastAutoLoadAt >= 500) {
     lastAutoLoadAt = now;
@@ -113,11 +115,11 @@ function search() {
       </div>
 
       <div class="cols">
-        <button type="button" :class="{ on: college === 'all' }" @click="setCollege('all')">全部学院</button>
-        <button type="button" :class="{ on: college === 'engineering' }" @click="setCollege('engineering')">工科</button>
-        <button type="button" :class="{ on: college === 'science' }" @click="setCollege('science')">理科</button>
-        <button type="button" :class="{ on: college === 'liberal' }" @click="setCollege('liberal')">文科</button>
-        <button type="button" :class="{ on: college === 'other' }" @click="setCollege('other')">其他</button>
+        <button type="button" :class="[{ on: college === 'all' }, 'btn-all']" @click="setCollege('all')">全部学院</button>
+        <button type="button" :class="[{ on: college === 'engineering' }, 'cat-engineering']" @click="setCollege('engineering')">工科</button>
+        <button type="button" :class="[{ on: college === 'science' }, 'cat-science']" @click="setCollege('science')">理科</button>
+        <button type="button" :class="[{ on: college === 'liberal' }, 'cat-liberal']" @click="setCollege('liberal')">文科</button>
+        <button type="button" :class="[{ on: college === 'other' }, 'cat-other']" @click="setCollege('other')">其他</button>
       </div>
 
       <div class="sorts">
@@ -145,46 +147,74 @@ function search() {
 
 <style scoped>
 .head {
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  margin-bottom: 12px;
+  padding: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+  margin-bottom: 24px;
 }
 .big {
-  font-size: 26px;
+  font-size: 28px;
+  font-weight: 800;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 .muted {
-  margin: 8px 0 12px;
+  margin: 8px 0 16px;
   color: var(--tw-muted);
+  line-height: 1.5;
 }
 .tabs,
 .cols,
 .sorts {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
+}
+.sorts {
+  margin-top: 10px;
 }
 .tabs button,
 .cols button,
 .sorts button {
-  border: 1px solid rgba(26, 86, 219, 0.12);
-  background: rgba(255, 255, 255, 0.55);
-  padding: 8px 10px;
-  border-radius: 999px;
+  border: none;
+  background: #F3F4F6;
+  padding: 8px 16px;
+  border-radius: 9999px;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 600;
+  color: #4B5563;
+  transition: all 0.2s ease;
+}
+.tabs button:hover,
+.cols button.btn-all:hover,
+.sorts button:hover {
+  background: #E5E7EB;
 }
 .tabs button.on,
-.cols button.on,
+.cols button.btn-all.on,
 .sorts button.on {
-  border-color: rgba(26, 86, 219, 0.35);
-  background: rgba(26, 86, 219, 0.1);
+  background: var(--tw-primary);
+  color: #FFFFFF;
+}
+
+.cols button.cat-engineering { background: #FDE68A; color: #111827; }
+.cols button.cat-science { background: #E5E7EB; color: #111827; }
+.cols button.cat-liberal { background: #BFDBFE; color: #111827; }
+.cols button.cat-other { background: #FBCFE8; color: #111827; }
+
+.cols button.cat-engineering.on,
+.cols button.cat-science.on,
+.cols button.cat-liberal.on,
+.cols button.cat-other.on {
+  outline: 3px solid var(--tw-primary);
+  outline-offset: 2px;
 }
 .qrow {
-  margin: 10px 0;
+  margin: 16px 0;
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 8px;
+  gap: 12px;
 }
 .feed {
   display: grid;

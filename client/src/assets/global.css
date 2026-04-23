@@ -1,4 +1,5 @@
 :root {
+<<<<<<< HEAD
   --bg-primary: #cfe9ff;
   --bg-overlay: linear-gradient(135deg, rgba(255, 247, 240, 0.55) 0%, rgba(207, 233, 255, 0.55) 45%, rgba(255, 228, 214, 0.45) 100%);
   --bg-elevated: rgba(255, 255, 255, 0.86);
@@ -14,26 +15,44 @@
   --input-bg: rgba(255, 255, 255, 0.75);
   --input-border: rgba(0, 0, 0, 0.08);
   --surface-nav: #f8fbff;
+=======
+  --bg-primary: #FAF5F0;
+  --bg-overlay: none;
+  --bg-elevated: #FFFFFF;
+  --bg-soft: #F3F4F6;
+  --bg-muted: #E5E7EB;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-strong: #000000;
+  --border-primary: rgba(0, 0, 0, 0.05);
+  --border-secondary: rgba(0, 0, 0, 0.05);
+  --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --input-bg: #F9FAFB;
+  --input-border: #E5E7EB;
+  --surface-nav: #1E1E1E;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   --surface-tooltip: #1f2937;
   --surface-tooltip-text: #fff;
-  --icon-soft: rgba(255, 255, 255, 0.55);
-  --icon-accent: #5573b4;
-  --tw-primary: #1a56db;
-  --tw-primary-soft: #e8f0ff;
+  --icon-soft: rgba(255, 255, 255, 0.7);
+  --icon-accent: #FFFFFF;
+  --tw-primary: #1E1E1E;
+  --tw-primary-soft: #F3F4F6;
   --tw-text: var(--text-primary);
   --tw-muted: var(--text-secondary);
   --tw-card: var(--bg-elevated);
-  --tw-blur: blur(12px);
-  --tw-radius-card: 16px;
-  --tw-radius-btn: 8px;
+  --tw-blur: none;
+  --tw-radius-card: 24px;
+  --tw-radius-btn: 9999px;
   --tw-shadow: var(--shadow-primary);
-  --tw-warm: #fff7f0;
-  --tw-accent: #ffb4a2;
-  --tw-leaf: #7bc96f;
-  --tw-bg-image: url('/bg-lake.png');
+  --tw-warm: #FDE68A;
+  --tw-accent: #FBCFE8;
+  --tw-leaf: #BFDBFE;
+  --tw-bg-image: none;
 }
 
 :root[data-theme='dark'] {
+<<<<<<< HEAD
   --bg-primary: #0b1220;
   --bg-overlay: linear-gradient(135deg, rgba(8, 15, 29, 0.82) 0%, rgba(14, 27, 52, 0.76) 45%, rgba(20, 24, 39, 0.82) 100%);
   --bg-elevated: rgba(15, 23, 42, 0.76);
@@ -54,6 +73,28 @@
   --icon-soft: rgba(30, 41, 59, 0.9);
   --icon-accent: #c7d7f4;
   --tw-primary-soft: rgba(59, 130, 246, 0.14);
+=======
+  --bg-primary: #111827;
+  --bg-overlay: none;
+  --bg-elevated: #1F2937;
+  --bg-soft: #374151;
+  --bg-muted: #4B5563;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-strong: #FFFFFF;
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+  --shadow-primary: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --input-bg: #374151;
+  --input-border: #4B5563;
+  --surface-nav: #000000;
+  --surface-tooltip: #F3F4F6;
+  --surface-tooltip-text: #111827;
+  --icon-soft: rgba(255, 255, 255, 0.5);
+  --icon-accent: #FFFFFF;
+  --tw-primary-soft: #374151;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 
 *,
@@ -66,6 +107,7 @@ html,
 body,
 #app {
   height: 100%;
+  background: var(--bg-primary);
 }
 
 body {
@@ -76,24 +118,6 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background: var(--tw-bg-image) center / cover no-repeat;
-  filter: saturate(1.05) brightness(1.02);
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: var(--bg-overlay);
-  pointer-events: none;
-}
-
 a {
   color: var(--tw-primary);
   text-decoration: none;
@@ -101,8 +125,6 @@ a {
 
 .tw-card {
   background: var(--tw-card);
-  backdrop-filter: var(--tw-blur);
-  -webkit-backdrop-filter: var(--tw-blur);
   border-radius: var(--tw-radius-card);
   box-shadow: var(--tw-shadow);
   border: 1px solid var(--border-primary);
@@ -112,9 +134,16 @@ a {
 .tw-btn {
   border: none;
   border-radius: var(--tw-radius-btn);
+<<<<<<< HEAD
   padding: 10px 20px;
   cursor: pointer;
   font-weight: 600;
+=======
+  padding: 10px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
@@ -127,21 +156,35 @@ a {
 }
 
 .tw-btn-primary {
-  background: linear-gradient(135deg, #1a56db, #3b82f6);
+  background: var(--tw-primary);
   color: #fff;
+<<<<<<< HEAD
   box-shadow: 0 4px 14px rgba(26, 86, 219, 0.3);
 }
 
 .tw-btn-primary:hover {
   background: linear-gradient(135deg, #1e40af, #2563eb);
   box-shadow: 0 6px 20px rgba(26, 86, 219, 0.4);
+=======
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.tw-btn-primary:hover {
+  background: #000000;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   transform: translateY(-1px);
 }
 
 .tw-btn-ghost {
   background: var(--bg-soft);
   color: var(--tw-text);
-  border: 1px solid color-mix(in srgb, var(--tw-primary) 15%, transparent);
+  border: 1px solid var(--border-primary);
+}
+
+.tw-btn-ghost:hover {
+  background: var(--bg-muted);
+  transform: translateY(-1px);
 }
 
 .tw-btn-ghost:hover {
@@ -152,8 +195,13 @@ a {
 
 .tw-input {
   width: 100%;
+<<<<<<< HEAD
   padding: 12px 16px;
   border-radius: 12px;
+=======
+  padding: 12px 20px;
+  border-radius: 9999px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   border: 1px solid var(--input-border);
   background: var(--input-bg);
   color: var(--text-primary);
@@ -168,11 +216,16 @@ a {
 select.tw-input,
 textarea.tw-input {
   color: var(--text-primary);
+  border-radius: 20px;
 }
 
 .tw-input:focus {
   border-color: var(--tw-primary);
+<<<<<<< HEAD
   box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.15);
+=======
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 
 .tw-input.err {
@@ -180,13 +233,14 @@ textarea.tw-input {
 }
 
 .page-title {
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
 #nprogress .bar {
-  background: #1a56db !important;
-  height: 2px !important;
+  background: var(--tw-primary) !important;
+  height: 3px !important;
 }
 #nprogress .peg {
-  box-shadow: 0 0 8px #1a56db, 0 0 4px #1a56db !important;
+  box-shadow: 0 0 10px var(--tw-primary), 0 0 5px var(--tw-primary) !important;
 }

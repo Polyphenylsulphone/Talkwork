@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { Bell, Moon, Plus, Sun } from 'lucide-vue-next';
 import { useAuthStore } from '../stores/auth';
 import { useUiStore } from '../stores/ui';
+import { http, unwrap } from '../api/http';
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -21,12 +22,27 @@ const msgCountText = computed(() => (unread.value > 99 ? '99+' : String(unread.v
 const isDark = computed(() => ui.theme === 'dark');
 const wallpaper = computed(() => ui.wallpaper);
 const wallpaperOptions = computed(() => ui.wallpaperOptions);
+const avatarLoadFailed = ref(false);
+const avatarSrc = computed(() => {
+  if (avatarLoadFailed.value) return '';
+  const src = String(auth.user?.avatar_url || '').trim();
+  return src || '';
+});
 
-onMounted(() => {
+onMounted(async () => {
   try {
     history.value = JSON.parse(localStorage.getItem(histKey) || '[]');
   } catch {
     history.value = [];
+  }
+  if (auth.isLoggedIn) {
+    try {
+      const me = unwrap(await http.get('/auth/me'));
+      auth.patchUser(me);
+      avatarLoadFailed.value = false;
+    } catch {
+      /* handled by interceptor */
+    }
   }
   window.addEventListener('keydown', onKey);
 });
@@ -83,18 +99,14 @@ function toggleTheme() {
 function onWallpaperChange(e) {
   ui.applyWallpaper(e.target.value);
 }
+
+function onAvatarError() {
+  avatarLoadFailed.value = true;
+}
 </script>
 
 <template>
-  <header class="top">
-    <div class="left" @click="router.push({ name: 'home' })">
-      <div class="logo">TW</div>
-      <div class="brand">
-        <div class="name">TalkWork</div>
-        <div class="sub">温柔地，走向你想去的方向</div>
-      </div>
-    </div>
-
+  <header class="top" :class="{ collapsed: ui.sidebarCollapsed }">
     <div class="center">
       <div class="search-wrap">
         <div class="search">
@@ -154,7 +166,7 @@ function onWallpaperChange(e) {
           </div>
         </div>
         <button class="avatar" type="button" @click="userMenuOpen = !userMenuOpen">
-          <img v-if="auth.user?.avatar_url" :src="auth.user.avatar_url" alt="" />
+          <img v-if="avatarSrc" :src="avatarSrc" alt="" @error="onAvatarError" />
           <span v-else>{{ auth.user?.username?.slice(0, 1) }}</span>
         </button>
         <div v-if="userMenuOpen" class="user-menu tw-card">
@@ -168,49 +180,16 @@ function onWallpaperChange(e) {
 
 <style scoped>
 .top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   z-index: 50;
-  height: 52px;
+  height: 64px;
+  flex-shrink: 0;
   margin: 0;
-  padding: 6px 12px;
+  padding: 8px 32px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--surface-nav);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-bottom: 1px solid var(--border-secondary);
-}
-.left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  min-width: 170px;
-}
-.logo {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  font-weight: 900;
-  color: #fff;
-  background: linear-gradient(135deg, #1a56db, #60a5fa);
-  box-shadow: 0 10px 22px rgba(26, 86, 219, 0.25);
-}
-.brand .name {
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  color: var(--text-strong);
-}
-.brand .sub {
-  font-size: 11px;
-  color: var(--tw-muted);
-  margin-top: 2px;
+  gap: 16px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
 }
 .center {
   flex: 1;
@@ -227,19 +206,39 @@ function onWallpaperChange(e) {
   justify-content: center;
 }
 .search {
-  width: min(560px, 100%);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 6px;
+  width: min(480px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border-radius: 9999px;
+  padding: 4px 4px 4px 16px;
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+.search .tw-input {
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  box-shadow: none;
+  flex: 1;
+}
+.search .tw-input:focus {
+  box-shadow: none;
 }
 .search-go {
   border: none;
-  background: var(--bg-muted);
-  color: var(--tw-primary);
-  border-radius: 10px;
-  padding: 0 10px;
+  background: var(--bg-soft);
+  color: var(--text-primary);
+  border-radius: 9999px;
+  padding: 8px 16px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.search-go:hover {
+  background: var(--bg-muted);
 }
 .wallpaper-picker {
   display: inline-flex;
@@ -421,9 +420,6 @@ function onWallpaperChange(e) {
   }
   .wallpaper-picker {
     padding: 0 8px;
-  }
-  .brand .sub {
-    display: none;
   }
   .search {
     width: min(360px, 100%);

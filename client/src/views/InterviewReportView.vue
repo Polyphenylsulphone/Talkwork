@@ -146,6 +146,7 @@ async function shareAsImage() {
   justify-content: flex-end;
 }
 .wrap {
+<<<<<<< HEAD
   padding: 24px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
@@ -156,6 +157,17 @@ async function shareAsImage() {
   background: linear-gradient(135deg, #1a56db, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+=======
+  padding: 32px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+}
+.score {
+  font-size: 72px;
+  font-weight: 900;
+  color: var(--tw-primary);
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   text-align: center;
   line-height: 1.1;
   margin-top: 12px;
@@ -163,27 +175,45 @@ async function shareAsImage() {
 .sub {
   text-align: center;
   color: var(--tw-muted);
+<<<<<<< HEAD
   margin: 4px 0 24px;
   font-size: 14px;
+=======
+  margin: 8px 0 32px;
+  font-size: 15px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   font-weight: 600;
 }
 .dims {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 14px;
   margin-bottom: 24px;
   padding: 20px;
   background: color-mix(in srgb, var(--tw-primary) 3%, transparent);
   border-radius: 16px;
+=======
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #F9FAFB;
+  border-radius: 20px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .row {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 12px;
+=======
+  gap: 16px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .k {
   font-weight: 800;
   color: var(--text-primary);
+<<<<<<< HEAD
   width: 70px;
   font-size: 14px;
 }
@@ -192,42 +222,83 @@ async function shareAsImage() {
   height: 8px;
   border-radius: 999px;
   background: var(--border-secondary);
+=======
+  width: 80px;
+  font-size: 15px;
+}
+.bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 9999px;
+  background: #E5E7EB;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   overflow: hidden;
 }
 .fill {
   height: 100%;
+<<<<<<< HEAD
   border-radius: 999px;
   background: linear-gradient(90deg, #1a56db, #60a5fa);
+=======
+  border-radius: 9999px;
+  background: var(--tw-primary);
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .n {
   font-weight: 900;
   text-align: right;
+<<<<<<< HEAD
   width: 36px;
+=======
+  width: 40px;
+  font-size: 16px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   color: var(--tw-primary);
 }
 .sec {
   font-weight: 900;
+<<<<<<< HEAD
   font-size: 18px;
   margin: 24px 0 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+=======
+  font-size: 20px;
+  margin: 32px 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .sec::before {
   content: '';
   display: block;
+<<<<<<< HEAD
   width: 4px;
   height: 16px;
+=======
+  width: 6px;
+  height: 20px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   background: var(--tw-primary);
   border-radius: 4px;
 }
 .item {
+<<<<<<< HEAD
   padding: 16px 20px;
   margin-bottom: 12px;
   border: 1px solid var(--border-secondary);
   background: var(--bg-soft);
   border-radius: 16px;
+=======
+  padding: 24px;
+  margin-bottom: 16px;
+  border: none;
+  background: #F9FAFB;
+  border-radius: 20px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .b {
   font-weight: 800;

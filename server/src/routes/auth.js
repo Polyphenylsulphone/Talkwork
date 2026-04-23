@@ -2,10 +2,19 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { nanoid } from 'nanoid';
+import { fileURLToPath } from 'url';
 import { query } from '../db.js';
 import { ok, fail } from '../util/response.js';
 import { signToken, requireAuth } from '../middleware/auth.js';
+<<<<<<< HEAD
 import { DEFAULT_AVATAR_URLS, isAllowedAvatarUrl } from '../util/defaultAvatar.js';
+=======
+import { normalizeUserAvatarUrl, pickRandomDefaultAvatar } from '../util/avatar.js';
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 
 const router = Router();
 const RESET_CODE_TTL_MINUTES = 5;
@@ -53,6 +62,23 @@ function buildResetMailTransport() {
 }
 
 const resetMailTransport = buildResetMailTransport();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const registerAvatarUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadDir),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname) || '.png';
+      cb(null, `${nanoid()}${ext}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (!/^image\//.test(file.mimetype)) return cb(new Error('仅支持图片'));
+    cb(null, true);
+  },
+});
 
 function hashCode(code) {
   return crypto.createHash('sha256').update(code).digest('hex');
@@ -202,6 +228,10 @@ router.get('/default-avatars', async (_req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { username, code, password, college, avatar_url } = req.body || {};
+<<<<<<< HEAD
+=======
+    const avatarUrl = normalizeUserAvatarUrl(avatar_url) || pickRandomDefaultAvatar();
+>>>>>>> d6473da (前端样式改动，加入默认头像)
     const phone = normalizePhone(username);
     if (!phone || !code || !password || !college) {
       return res.status(400).json(fail(400, '参数不完整'));
@@ -241,7 +271,11 @@ router.post('/register', async (req, res) => {
       `${phone}@example.invalid`,
       hash,
       college,
+<<<<<<< HEAD
       isAllowedAvatarUrl(avatar_url) ? String(avatar_url).trim() : DEFAULT_AVATAR_URLS[0],
+=======
+      avatarUrl,
+>>>>>>> d6473da (前端样式改动，加入默认头像)
     ]);
     await query('UPDATE register_sms_codes SET used_at = NOW() WHERE id = ?', [codeTicket.id]);
     res.json(ok({ message: '注册成功' }));
@@ -252,6 +286,14 @@ router.post('/register', async (req, res) => {
     console.error(e);
     res.status(500).json(fail(500, '服务器错误'));
   }
+});
+
+router.post('/register/upload-avatar', (req, res) => {
+  registerAvatarUpload.single('file')(req, res, (err) => {
+    if (err) return res.status(400).json(fail(400, err.message || '上传失败'));
+    if (!req.file) return res.status(400).json(fail(400, '未选择文件'));
+    res.json(ok({ url: `/uploads/${req.file.filename}` }));
+  });
 });
 
 router.post('/register/send-code', async (req, res) => {

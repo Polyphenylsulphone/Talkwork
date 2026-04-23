@@ -430,20 +430,35 @@ function goInterview() {
   }
 }
 .form {
+<<<<<<< HEAD
   padding: 20px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  padding: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .bar {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+<<<<<<< HEAD
   margin-bottom: 16px;
   padding: 10px;
   border: 1px solid var(--border-secondary);
   border-radius: 14px;
   background: var(--bg-soft);
+=======
+  margin-bottom: 24px;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background: #F9FAFB;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .bar-group {
   display: flex;
@@ -458,32 +473,40 @@ function goInterview() {
   gap: 6px;
 }
 .btn-lite {
-  border-color: rgba(148, 163, 184, 0.35);
-  background: rgba(255, 255, 255, 0.86);
+  border-color: #E5E7EB;
+  background: #FFFFFF;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .btn-lite:hover {
   transform: translateY(-1px);
-  border-color: rgba(26, 86, 219, 0.35);
-  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+  border-color: var(--tw-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .btn-strong {
-  box-shadow: 0 4px 12px rgba(26, 86, 219, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .btn-strong:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(26, 86, 219, 0.28);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 .bar-group-main :deep(.tw-btn-primary) {
-  box-shadow: 0 4px 12px rgba(26, 86, 219, 0.18);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .drafts {
+<<<<<<< HEAD
   margin-bottom: 16px;
   border: 1px solid var(--border-secondary);
   background: var(--bg-soft);
   border-radius: 12px;
   padding: 12px;
+=======
+  margin-bottom: 24px;
+  border: none;
+  background: #F9FAFB;
+  border-radius: 16px;
+  padding: 16px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .ditem {
   display: grid;

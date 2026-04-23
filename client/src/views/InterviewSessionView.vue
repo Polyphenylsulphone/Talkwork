@@ -710,12 +710,21 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .prep {
+<<<<<<< HEAD
   padding: 20px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  padding: 24px 32px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .prep h2 {
-  margin: 0 0 8px;
+  margin: 0 0 12px;
+  font-size: 24px;
+  font-weight: 800;
 }
 .muted {
   color: var(--tw-muted);
@@ -723,10 +732,10 @@ onBeforeUnmount(() => {
 }
 .lbl {
   display: block;
-  margin: 12px 0 8px;
-  font-weight: 900;
-  font-size: 12px;
-  color: var(--tw-muted);
+  margin: 20px 0 10px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #4B5563;
 }
 .combo {
   position: relative;
@@ -735,15 +744,15 @@ onBeforeUnmount(() => {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 4px);
+  top: calc(100% + 8px);
   max-height: 260px;
   overflow: auto;
-  background: #fff;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 10px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
   z-index: 20;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
-  padding: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 8px;
 }
 .opt {
   width: 100%;
@@ -751,28 +760,31 @@ onBeforeUnmount(() => {
   background: transparent;
   text-align: left;
   border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 .opt:hover,
 .opt.on {
-  background: rgba(26, 86, 219, 0.08);
+  background: #F3F4F6;
+  font-weight: 600;
 }
 .empty {
-  padding: 8px 10px;
+  padding: 10px 12px;
   color: var(--tw-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 .err-tip {
-  margin-top: 6px;
-  color: #b91c1c;
-  font-size: 12px;
+  margin-top: 8px;
+  color: #EF4444;
+  font-size: 13px;
 }
 :deep(.tw-input.err) {
-  border-color: rgba(185, 28, 28, 0.6);
+  border-color: #EF4444;
 }
 .avatar {
+<<<<<<< HEAD
   margin-top: 12px;
   padding: 20px;
   display: grid;
@@ -781,6 +793,16 @@ onBeforeUnmount(() => {
   border: 1px solid var(--border-primary);
   background: color-mix(in srgb, var(--tw-primary) 4%, transparent);
   border-radius: 16px;
+=======
+  margin-top: 16px;
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  border: none;
+  background: #F9FAFB;
+  border-radius: 20px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .face {
   font-size: 64px;
@@ -792,39 +814,50 @@ onBeforeUnmount(() => {
   50% { transform: translateY(-6px); }
 }
 .bubble {
-  font-weight: 900;
+  font-weight: 800;
+  font-size: 16px;
 }
 .sm {
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
 }
 .full {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 24px;
+  padding: 14px;
+  font-size: 16px;
 }
 .live .top {
   display: flex;
   align-items: center;
   gap: 12px;
+<<<<<<< HEAD
   padding: 12px 16px;
   margin-bottom: 16px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 20px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .grow {
   flex: 1;
 }
 .pill {
-  font-weight: 900;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(26, 86, 219, 0.1);
-  color: #1a56db;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: #F3F4F6;
+  color: #111827;
 }
 .grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  gap: 12px;
+  gap: 16px;
   align-items: start;
 }
 @media (max-width: 980px) {
@@ -834,14 +867,21 @@ onBeforeUnmount(() => {
 }
 .left,
 .right {
+<<<<<<< HEAD
   padding: 16px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  padding: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .stage {
-  border-radius: 16px;
-  padding: 18px;
-  background: rgba(26, 86, 219, 0.06);
+  border-radius: 20px;
+  padding: 20px;
+  background: #F9FAFB;
   text-align: center;
 }
 .fallback-video {

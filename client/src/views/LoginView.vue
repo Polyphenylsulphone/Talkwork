@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Check, Eye, EyeOff } from 'lucide-vue-next';
+import { Check, Eye, EyeOff, Upload } from 'lucide-vue-next';
 import { http, unwrap } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { toast } from '../stores/toast';
@@ -45,6 +45,8 @@ const selectedDefaultAvatar = ref(DEFAULT_AVATARS[0] || '');
 const registerAvatarBlob = ref(null);
 const registerAvatarPreview = ref(DEFAULT_AVATARS[0] || '');
 const ONBOARDING_SEEN_KEY = 'tw_onboarding_seen';
+const DEFAULT_AVATAR_URLS = Array.from({ length: 10 }, (_, i) => `/default-avatars/default-${String(i + 1).padStart(2, '0')}.png`);
+const registerAvatarPreview = ref(DEFAULT_AVATAR_URLS[0]);
 
 const pwdOk = computed(() => {
   const p = password.value;
@@ -158,7 +160,11 @@ async function onRegister() {
       code: registerCode.value.trim(),
       password: password.value,
       college: college.value,
+<<<<<<< HEAD
       avatar_url: avatarUrl,
+=======
+      avatar_url: registerAvatarPreview.value,
+>>>>>>> d6473da (前端样式改动，加入默认头像)
     });
     const data = unwrap(await http.post('/auth/login', { username: username.value.trim(), password: password.value }));
     auth.setSession({ token: data.token, user: data.user });
@@ -170,6 +176,20 @@ async function onRegister() {
   } catch {
     /* */
   }
+}
+
+async function onRegisterAvatarUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    toast.error('请选择图片文件');
+    return;
+  }
+  const fd = new FormData();
+  fd.append('file', file);
+  const data = unwrap(await http.post('/auth/register/upload-avatar', fd, { headers: { 'Content-Type': 'multipart/form-data' } }));
+  registerAvatarPreview.value = String(data?.url || '');
+  toast.success('头像已上传');
 }
 
 function getOnboardingSeenKey(user) {
@@ -244,6 +264,7 @@ function switchTab(t) {
   forgotMode.value = false;
   resetStep.value = 1;
   registerCode.value = '';
+<<<<<<< HEAD
   registerAvatarMode.value = 'default';
   selectedDefaultAvatar.value = defaultAvatarOptions.value[0] || DEFAULT_AVATARS[0] || '';
   registerAvatarBlob.value = null;
@@ -267,6 +288,9 @@ function onRegisterAvatarUpload(e) {
   registerAvatarMode.value = 'upload';
   registerAvatarBlob.value = file;
   registerAvatarPreview.value = URL.createObjectURL(file);
+=======
+  registerAvatarPreview.value = DEFAULT_AVATAR_URLS[0];
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 
 function skipOnboarding() {
@@ -481,6 +505,30 @@ function startResetCooldown(seconds = 60) {
         </template>
 
         <template v-else>
+          <div class="step-hint">选择头像（默认头像或上传）</div>
+          <div class="reg-avatar">
+            <div class="reg-avatar-preview">
+              <img v-if="registerAvatarPreview" :src="registerAvatarPreview" alt="头像预览" />
+              <span v-else>?</span>
+            </div>
+            <label class="tw-btn tw-btn-ghost reg-avatar-upload">
+              <Upload :size="14" />
+              上传头像
+              <input type="file" accept="image/*" hidden @change="onRegisterAvatarUpload" />
+            </label>
+            <div class="reg-avatar-grid">
+              <button
+                v-for="u in DEFAULT_AVATAR_URLS"
+                :key="u"
+                type="button"
+                class="reg-avatar-item"
+                :class="{ on: registerAvatarPreview === u }"
+                @click="registerAvatarPreview = u"
+              >
+                <img :src="u" alt="" />
+              </button>
+            </div>
+          </div>
           <div class="step-hint">选择你的学院（单选）</div>
           <div class="cols">
             <button
@@ -704,6 +752,51 @@ function startResetCooldown(seconds = 60) {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+}
+.reg-avatar {
+  display: grid;
+  gap: 8px;
+}
+.reg-avatar-preview {
+  width: 86px;
+  height: 86px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid rgba(26, 86, 219, 0.2);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  font-weight: 900;
+}
+.reg-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.reg-avatar-upload {
+  width: fit-content;
+}
+.reg-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.reg-avatar-item {
+  padding: 0;
+  border: 2px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+}
+.reg-avatar-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.reg-avatar-item.on {
+  border-color: rgba(26, 86, 219, 0.85);
 }
 .col {
   position: relative;

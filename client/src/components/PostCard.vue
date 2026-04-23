@@ -19,10 +19,13 @@ const collectBusy = ref(false);
 
 const summary = computed(() => props.post.summary || '');
 const isAnonymous = computed(() => !!Number(props.post.is_anonymous));
+const liked = computed(() => !!Number(props.post.liked));
+const collected = computed(() => !!Number(props.post.collected));
 const cardStyle = computed(() => ({
   borderLeft: `3px solid ${collegeColor(props.post.college)}`,
 }));
 
+<<<<<<< HEAD
 const liked = computed(() => !!Number(props.post.liked));
 const collected = computed(() => !!Number(props.post.collected));
 const displayAvatar = computed(() => props.post.avatar_url || ANONYMOUS_AVATAR);
@@ -33,6 +36,8 @@ const interactionCount = computed(() => {
   return Number(props.post.comments_count ?? props.post.answers_count ?? 0);
 });
 
+=======
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 function go() {
   if (props.post.post_type === 'question') {
     router.push({ name: 'qa-detail', params: { id: props.post.id } });
@@ -103,8 +108,12 @@ async function toggleCollect(e) {
     <div class="row-bottom">
       <div class="author">
         <div class="avatar" :class="{ 'avatar-anon': isAnonymous }">
+<<<<<<< HEAD
           <img v-if="isAnonymous" class="avatar-img" :src="displayAvatar" alt="" />
           <img v-else-if="post.avatar_url" class="avatar-img" :src="post.avatar_url" alt="" />
+=======
+          <img v-if="post.avatar_url" class="avatar-img" :src="post.avatar_url" alt="" />
+>>>>>>> d6473da (前端样式改动，加入默认头像)
           <template v-else>{{ (post.username || '?').slice(0, 1) }}</template>
         </div>
         <span>{{ post.username }}</span>
@@ -141,16 +150,17 @@ async function toggleCollect(e) {
 
 <style scoped>
 .card {
-  padding: 16px 18px;
+  padding: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #eef2f7;
   border-left-width: 3px;
+  background: #ffffff;
+  border-radius: 18px;
 }
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
-  background: rgba(255, 255, 255, 0.92);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 .row-top {
   display: flex;
@@ -161,8 +171,8 @@ async function toggleCollect(e) {
 .type-badge {
   flex-shrink: 0;
   min-width: 46px;
-  height: 26px;
-  padding: 0 8px;
+  height: 23px;
+  padding: 0 9px;
   border-radius: 8px;
   display: grid;
   place-items: center;
@@ -172,19 +182,20 @@ async function toggleCollect(e) {
   white-space: nowrap;
 }
 .type-q {
-  color: #c2410c;
-  background: rgba(251, 146, 60, 0.2);
-  border: 1px solid rgba(251, 146, 60, 0.45);
+  color: #9a3412;
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
 }
 .type-a {
   color: #1d4ed8;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
 }
 .title {
   margin: 0;
   font-size: 17px;
   line-height: 1.35;
+  font-weight: 900;
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -196,10 +207,10 @@ async function toggleCollect(e) {
 .tag {
   font-size: 12px;
   font-weight: 700;
-  padding: 4px 8px;
+  padding: 2px 8px;
   border-radius: 999px;
-  border: 1px solid transparent;
-  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid currentColor;
+  background: #ffffff;
   white-space: nowrap;
 }
 .right-tools {
@@ -209,9 +220,9 @@ async function toggleCollect(e) {
   flex-shrink: 0;
 }
 .summary {
-  margin: 10px 0 14px;
-  color: var(--tw-muted);
-  line-height: 1.55;
+  margin: 8px 0 14px;
+  color: #4b5563;
+  line-height: 1.45;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -229,14 +240,15 @@ async function toggleCollect(e) {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--tw-muted);
+  color: #6b7280;
   font-size: 13px;
+  font-weight: 600;
 }
 .avatar {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #93c5fd, #bfdbfe);
+  background: #dbeafe;
   display: grid;
   place-items: center;
   font-weight: 800;
@@ -246,7 +258,7 @@ async function toggleCollect(e) {
   flex-shrink: 0;
 }
 .avatar-anon {
-  background: #e2e8f0;
+  background: #e5e7eb;
   padding: 0;
 }
 .avatar-img {
@@ -256,21 +268,21 @@ async function toggleCollect(e) {
 }
 .meta {
   display: flex;
-  gap: 6px;
+  gap: 10px;
   align-items: center;
   flex-wrap: wrap;
   font-size: 12px;
-  color: var(--tw-muted);
+  color: #6b7280;
 }
 .meta-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
+  padding: 0;
   margin: 0;
   border: none;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.12);
+  background: transparent;
   color: #64748b;
   cursor: pointer;
   font: inherit;
@@ -280,20 +292,21 @@ async function toggleCollect(e) {
     transform 0.12s ease;
 }
 .meta-btn:hover:not(:disabled) {
-  background: rgba(148, 163, 184, 0.22);
-  transform: scale(1.03);
+  background: transparent;
+  transform: none;
+  color: #475569;
 }
 .meta-btn:disabled {
   opacity: 0.55;
   cursor: wait;
 }
 .meta-btn.like.on {
-  color: #e11d48;
-  background: rgba(244, 63, 94, 0.14);
+  color: #be123c;
+  background: transparent;
 }
 .meta-btn.collect.on {
-  color: #d97706;
-  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+  background: transparent;
 }
 .meta-ic {
   flex-shrink: 0;
@@ -306,11 +319,11 @@ async function toggleCollect(e) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 2px;
-  color: #94a3b8;
+  padding: 0;
+  color: #9ca3af;
 }
 .time {
-  color: #94a3b8;
+  color: #9ca3af;
   padding-left: 2px;
 }
 </style>

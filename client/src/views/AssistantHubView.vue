@@ -49,14 +49,24 @@ const cards = [
 
 <style scoped>
 .hero {
+<<<<<<< HEAD
   padding: 20px 24px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
   margin-bottom: 16px;
+=======
+  padding: 24px 32px;
+  border: none;
+  border-radius: 24px;
+  margin-bottom: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .hero h1 {
   margin: 0 0 8px;
-  font-size: 26px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 .muted {
   margin: 0;
@@ -66,7 +76,7 @@ const cards = [
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
 }
 @media (max-width: 900px) {
   .grid {
@@ -75,15 +85,24 @@ const cards = [
 }
 .card {
   text-align: left;
+<<<<<<< HEAD
   padding: 20px;
   cursor: pointer;
   border: 1px solid var(--border-primary);
+=======
+  padding: 24px;
+  cursor: pointer;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
 }
 .card:hover {
   transform: translateY(-4px);
+<<<<<<< HEAD
   box-shadow: var(--shadow-hover);
   border-color: color-mix(in srgb, var(--tw-primary) 30%, transparent);
 }
@@ -97,49 +116,97 @@ const cards = [
   background: color-mix(in srgb, var(--tw-primary) 8%, transparent);
   color: var(--tw-primary);
   margin-bottom: 16px;
+=======
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+.emoji {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  color: var(--tw-primary);
+  margin-bottom: 20px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   transition: transform 0.3s ease;
 }
 .card:hover .emoji {
   transform: scale(1.1) rotate(-5deg);
 }
 .t {
+<<<<<<< HEAD
   font-weight: 900;
   font-size: 18px;
   margin-bottom: 8px;
 }
 .d {
   color: var(--tw-muted);
+=======
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+.d {
+  color: #6B7280;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   line-height: 1.6;
   font-size: 14px;
 }
 .hist {
+<<<<<<< HEAD
   margin-top: 16px;
   padding: 20px;
   border: 1px solid var(--border-primary);
   border-radius: 16px;
+=======
+  margin-top: 24px;
+  padding: 24px 32px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .h {
-  font-weight: 900;
-  margin-bottom: 10px;
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 16px;
 }
 .row {
   width: 100%;
+<<<<<<< HEAD
   border: 1px solid var(--border-secondary);
   background: var(--bg-soft);
   border-radius: 14px;
   padding: 14px 16px;
+=======
+  border: none;
+  background: #F9FAFB;
+  border-radius: 16px;
+  padding: 16px 20px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   display: flex;
   justify-content: space-between;
   gap: 12px;
   align-items: center;
   cursor: pointer;
+<<<<<<< HEAD
   margin-bottom: 10px;
+=======
+  margin-bottom: 12px;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   transition: all 0.2s ease;
 }
 .row:hover {
   transform: translateX(4px);
+<<<<<<< HEAD
   border-color: color-mix(in srgb, var(--tw-primary) 30%, transparent);
   background: color-mix(in srgb, var(--tw-primary) 4%, var(--bg-soft));
+=======
+  background: #F3F4F6;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
 }
 .t2 {
   font-weight: 900;

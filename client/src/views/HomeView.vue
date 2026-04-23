@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { BookOpen, ChevronLeft, ChevronRight, FlaskConical, Layers, Settings } from 'lucide-vue-next';
@@ -36,9 +36,9 @@ watch(
 onMounted(() => {
   syncFromRoute();
   reload();
-  window.addEventListener('scroll', onScroll);
+  document.addEventListener('scroll', onScroll, true);
 });
-onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
+onBeforeUnmount(() => document.removeEventListener('scroll', onScroll, true));
 
 async function reload() {
   page.value = 1;
@@ -70,8 +70,10 @@ async function loadMore() {
   }
 }
 
-function onScroll() {
-  const nearBottom = window.innerHeight + window.scrollY > document.body.scrollHeight - 220;
+function onScroll(e) {
+  const target = e.target;
+  if (!target || !target.clientHeight) return;
+  const nearBottom = target.clientHeight + target.scrollTop > target.scrollHeight - 220;
   const now = Date.now();
   if (nearBottom && now - lastAutoLoadAt >= 500) {
     lastAutoLoadAt = now;
@@ -81,13 +83,6 @@ function onScroll() {
 
 function pickCollege(id) {
   router.push({ name: 'home', query: { ...route.query, college: id === 'all' ? undefined : id } });
-}
-
-function slideColleges(dir) {
-  const el = collegesWrap.value;
-  if (!el) return;
-  const amount = Math.max(220, Math.floor(el.clientWidth * 0.7));
-  el.scrollBy({ left: dir * amount, behavior: 'smooth' });
 }
 
 const collegeIcons = {
@@ -100,15 +95,55 @@ const collegeIcons = {
 function getCollegeIcon(id) {
   return collegeIcons[id] || Layers;
 }
+
+// Compute stats for donut chart
+const stats = computed(() => {
+  const counts = { engineering: 0, science: 0, liberal: 0, other: 0 };
+  let total = 0;
+  list.value.forEach(p => {
+    if (counts[p.college] !== undefined) {
+      counts[p.college]++;
+      total++;
+    }
+  });
+  
+  if (total === 0) {
+    return {
+      engineering: { offset: 0, dash: 0 },
+      science: { offset: 0, dash: 0 },
+      liberal: { offset: 0, dash: 0 },
+      other: { offset: 0, dash: 0 },
+      total: 0
+    };
+  }
+
+  const circumference = 2 * Math.PI * 40; // r=40
+  let currentOffset = 0;
+  
+  const result = {};
+  for (const key in counts) {
+    const percentage = counts[key] / total;
+    const dash = percentage * circumference;
+    result[key] = {
+      dash: dash,
+      offset: circumference - currentOffset
+    };
+    currentOffset += dash;
+  }
+  
+  result.total = total;
+  return result;
+});
+
 </script>
 
 <template>
-  <div>
-    <section class="hero tw-card">
+  <div class="home-layout">
+    <div class="home-left">
       <div class="hero-text">
-        <h1 class="page-title">今天，也想把求职这件事聊得温柔一点</h1>
-        <p class="sub">看看大家的经验与问题，慢慢找到属于你的节奏。</p>
+        <h1>今天，也想把求职这件事聊得温柔一点。</h1>
       </div>
+<<<<<<< HEAD
     </section>
 
     <section class="block">
@@ -133,13 +168,83 @@ function getCollegeIcon(id) {
           <div class="name">全部</div>
           <div class="mini">不筛选，随便逛逛</div>
         </button>
+=======
+      
+      <div class="stats-card tw-card">
+        <div class="stats-title">选个圈子逛逛吧</div>
+        <div class="donut-chart">
+          <!-- SVG Donut Chart -->
+          <svg viewBox="0 0 100 100" class="donut">
+            <!-- Background ring -->
+            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#F3F4F6" stroke-width="12"></circle>
+            
+            <!-- Dynamic segments based on actual data -->
+            <template v-if="stats.total > 0">
+              <!-- Engineering (Yellow) -->
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#FDE68A" stroke-width="12" 
+                :stroke-dasharray="`${stats.engineering.dash} 251.2`" 
+                :stroke-dashoffset="stats.engineering.offset" 
+                transform="rotate(-90 50 50)"></circle>
+              <!-- Science (Gray) -->
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#E5E7EB" stroke-width="12" 
+                :stroke-dasharray="`${stats.science.dash} 251.2`" 
+                :stroke-dashoffset="stats.science.offset" 
+                transform="rotate(-90 50 50)"></circle>
+              <!-- Liberal (Blue) -->
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#BFDBFE" stroke-width="12" 
+                :stroke-dasharray="`${stats.liberal.dash} 251.2`" 
+                :stroke-dashoffset="stats.liberal.offset" 
+                transform="rotate(-90 50 50)"></circle>
+              <!-- Other (Pink) -->
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#FBCFE8" stroke-width="12" 
+                :stroke-dasharray="`${stats.other.dash} 251.2`" 
+                :stroke-dashoffset="stats.other.offset" 
+                transform="rotate(-90 50 50)"></circle>
+            </template>
+            <!-- Fallback static segments if no data yet -->
+            <template v-else>
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#FDE68A" stroke-width="12" stroke-dasharray="62.8 251.2" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#E5E7EB" stroke-width="12" stroke-dasharray="62.8 251.2" stroke-dashoffset="-62.8" transform="rotate(-90 50 50)"></circle>
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#BFDBFE" stroke-width="12" stroke-dasharray="62.8 251.2" stroke-dashoffset="-125.6" transform="rotate(-90 50 50)"></circle>
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#FBCFE8" stroke-width="12" stroke-dasharray="62.8 251.2" stroke-dashoffset="-188.4" transform="rotate(-90 50 50)"></circle>
+            </template>
+            
+            <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" class="donut-text">
+              <tspan x="50" dy="-5" font-size="12" fill="#6B7280">总帖子</tspan>
+              <tspan x="50" dy="20" font-size="20" font-weight="900" fill="#111827">{{ list.length > 0 ? list.length + '+' : '...' }}</tspan>
+            </text>
+          </svg>
+>>>>>>> d6473da (前端样式改动，加入默认头像)
         </div>
-        <button type="button" class="arr" @click="slideColleges(1)"><ChevronRight :size="20" /></button>
       </div>
-    </section>
 
-    <section class="block">
-      <div class="block-title">帖子信息流</div>
+      <div class="categories-section">
+        <div class="cat-header">
+          <button type="button" class="btn-all" :class="{ on: college === 'all' }" @click="pickCollege('all')">
+            全部
+          </button>
+        </div>
+        
+        <div class="cat-grid">
+          <button
+            v-for="c in COLLEGES"
+            :key="c.id"
+            type="button"
+            class="academy tw-card"
+            :class="[{ on: college === c.id }, `cat-${c.id}`]"
+            @click="pickCollege(c.id)"
+          >
+            <div class="cat-content">
+              <div class="name">{{ c.label }}</div>
+              <div class="mini">看看同院同学都在聊些什么</div>
+            </div>
+            <div class="big"><component :is="getCollegeIcon(c.id)" :size="24" /></div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-right">
       <div v-if="q" class="hint tw-card">关键词：<b>{{ q }}</b> · 试试换几个更具体的词吧</div>
       <div class="feed">
         <PostCard v-for="p in list" :key="p.id" :post="p" />
@@ -156,11 +261,12 @@ function getCollegeIcon(id) {
       <div v-if="!done" class="more">
         <button class="tw-btn tw-btn-ghost" type="button" :disabled="loading" @click="loadMore">加载更多</button>
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
+<<<<<<< HEAD
 .hero {
   padding: 18px 18px;
   margin-bottom: 14px;
@@ -185,11 +291,15 @@ function getCollegeIcon(id) {
   color: rgba(43, 47, 58, 0.85);
 }
 .carousel-shell {
+=======
+.home-layout {
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 8px;
-  align-items: center;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
 }
+<<<<<<< HEAD
 .hscroll {
   display: grid;
   grid-auto-flow: column;
@@ -280,17 +390,220 @@ function getCollegeIcon(id) {
 @keyframes sk {
   to {
     background-position: -120% 0;
+=======
+
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   }
 }
+
+.home-left {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero-text h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+.stats-card {
+  padding: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+  text-align: center;
+}
+
+.stats-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.donut-chart {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.donut {
+  width: 100%;
+  height: 100%;
+}
+
+.donut circle {
+  transition: stroke-dasharray 1s ease-out, stroke-dashoffset 1s ease-out;
+}
+
+.donut-text {
+  font-family: inherit;
+}
+
+.categories-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cat-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-all {
+  background: #111827;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-all:hover {
+  background: #374151;
+}
+
+.btn-all.on {
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #111827;
+}
+
+.cat-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.academy {
+  text-align: left;
+  padding: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cat-engineering { background: #FDE68A; }
+.cat-science { background: #E5E7EB; }
+.cat-liberal { background: #BFDBFE; }
+.cat-other { background: #FBCFE8; }
+
+.academy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.academy.on {
+  outline: 3px solid var(--tw-primary);
+  outline-offset: 2px;
+}
+
+.cat-content {
+  flex: 1;
+}
+
+.name {
+  font-weight: 800;
+  font-size: 16px;
+  color: #111827;
+}
+
+.mini {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #4B5563;
+  line-height: 1.4;
+}
+
+.big {
+  color: #111827;
+  opacity: 0.8;
+  margin-left: 12px;
+}
+
+.home-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feed {
+  display: grid;
+  gap: 16px;
+}
+
+.hint {
+  padding: 16px 20px;
+  margin-bottom: 0;
+  border: none;
+  background: #FFFFFF;
+  border-radius: 20px;
+}
+
+.empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--tw-muted);
+  border: none;
+  background: #FFFFFF;
+  border-radius: 20px;
+}
+
+.sk-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.sk-card {
+  padding: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+}
+
+.sk-line {
+  height: 12px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #F3F4F6, #E5E7EB, #F3F4F6);
+  background-size: 220% 100%;
+  animation: sk 1.2s linear infinite;
+  margin-bottom: 12px;
+}
+
+.sk-line.w70 { width: 70%; }
+.sk-line.w60 { width: 60%; margin-bottom: 0; }
+
+@keyframes sk {
+  to { background-position: -120% 0; }
+}
+
 .end {
   text-align: center;
-  color: #94a3b8;
-  padding: 10px 0 0;
-  font-size: 13px;
+  color: #9CA3AF;
+  padding: 16px 0;
+  font-size: 14px;
 }
+
 .more {
   display: flex;
   justify-content: center;
-  padding: 12px 0 0;
+  padding: 16px 0;
 }
 </style>

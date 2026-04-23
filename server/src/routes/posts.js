@@ -158,9 +158,9 @@ router.get('/:id', authOptional, async (req, res) => {
 
     let tbaoInsight = null;
     if (post.post_type === 'question') {
-      const prompt = `你是亲切的求职导师「T宝」。用户问题标题：${post.title}\n请用2~3句中文给出温暖、可执行的简短建议，不要标题，不要列表。`;
+      const prompt = `你是亲切的求职导师「T宝」，请像朋友聊天一样回答，语气自然、温暖、易懂。不要用 Markdown（不要标题、列表、加粗、代码块）。用户问题标题：${post.title}\n请给出2~3句中文建议。`;
       try {
-        tbaoInsight = await deepseekChat([{ role: 'user', content: prompt }], { temperature: 0.6 });
+        tbaoInsight = stripAssistantMarkdown(await deepseekChat([{ role: 'user', content: prompt }], { temperature: 0.6 }));
       } catch {
         tbaoInsight = '先理清岗位与自身经历的连接点，再组织一个真诚的小故事来讲述你的动机与成长。';
       }

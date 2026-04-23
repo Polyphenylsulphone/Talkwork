@@ -436,13 +436,13 @@ function cancel() {
   gap: 10px;
   padding: 10px 12px;
   position: sticky;
-  top: 52px;
+  top: 0;
   z-index: 20;
   border-radius: 0;
   border: none;
   border-bottom: 1px solid rgba(15, 23, 42, 0.1);
   box-shadow: none;
-  max-width: 1220px;
+  max-width: 100%;
   width: calc(100% - 48px);
   margin: 0 auto;
 }
@@ -465,7 +465,7 @@ function cancel() {
   box-shadow: none;
   background: rgba(255, 255, 255, 0.72);
   min-height: calc(100vh - 102px);
-  max-width: 1220px;
+  max-width: 100%;
   width: calc(100% - 48px);
   margin: 0 auto;
 }
@@ -510,6 +510,7 @@ function cancel() {
   font-size: 12px;
 }
 .voice-hero {
+<<<<<<< HEAD
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -522,8 +523,12 @@ function cancel() {
   gap: 12px;
 }
 .mic-hero-btn {
+=======
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   display: flex;
+  flex-direction: column;
   align-items: center;
+<<<<<<< HEAD
   gap: 8px;
   padding: 12px 28px;
   border: none;
@@ -549,12 +554,64 @@ function cancel() {
 }
 .mic-hero-btn:disabled {
   opacity: 0.6;
+=======
+  justify-content: center;
+  padding: 20px;
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  gap: 10px;
+}
+.mic-hero-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  border-radius: 999px;
+  background: #111827;
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+.mic-hero-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(15, 23, 42, 0.35);
+  background: #0b1220;
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.25);
+}
+.mic-hero-btn.stop {
+  border-color: rgba(15, 23, 42, 0.25);
+  background: #1f2937;
+  color: #f8fafc;
+}
+.mic-hero-btn.stop:hover:not(:disabled) {
+  border-color: rgba(15, 23, 42, 0.4);
+  background: #111827;
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.25);
+}
+.mic-hero-btn:disabled {
+  opacity: 0.55;
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   cursor: not-allowed;
   transform: none;
 }
 .voice-hero-tip {
+<<<<<<< HEAD
   font-size: 13px;
   color: #475569;
+=======
+  font-size: 12px;
+  color: var(--tw-muted);
+>>>>>>> d6473da (前端样式改动，加入默认头像)
   text-align: center;
   max-width: 90%;
   line-height: 1.5;
@@ -566,7 +623,7 @@ function cancel() {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: none;
   padding: 10px 12px;
-  max-width: 1220px;
+  max-width: 100%;
   width: calc(100% - 48px);
   margin: 0 auto;
 }

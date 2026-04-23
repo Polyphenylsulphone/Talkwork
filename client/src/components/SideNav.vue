@@ -88,6 +88,17 @@ function randomizeTbotFace() {
     <div class="side-wrap" :class="{ collapsed }">
       <aside class="side" :class="{ collapsed }">
         <div class="side-inner tw-card">
+          <div class="brand-wrap" v-if="!collapsed" @click="router.push({ name: 'home' })">
+            <div class="logo">TW</div>
+            <div class="brand">
+              <div class="name">TalkWork</div>
+              <div class="sub">温柔地，走向你想去的方向</div>
+            </div>
+          </div>
+          <div class="brand-wrap collapsed-brand" v-else @click="router.push({ name: 'home' })">
+            <div class="logo">TW</div>
+          </div>
+
           <div class="side-head">
             <span v-if="!collapsed" class="side-title">工具栏</span>
             <button class="collapse" :class="{ open: collapsed }" type="button" :title="collapsed ? '展开' : '收起'" @click="ui.toggleSidebar()">
@@ -147,10 +158,10 @@ function randomizeTbotFace() {
 .side {
   position: fixed;
   left: 0;
-  top: 52px;
-  z-index: 40;
+  top: 0;
+  z-index: 60;
   width: 240px;
-  height: calc(100vh - 52px);
+  height: 100vh;
   padding: 0;
   transition: width 0.18s ease;
   box-sizing: border-box;
@@ -159,17 +170,57 @@ function randomizeTbotFace() {
   width: 84px;
 }
 .side-inner {
-  height: 100%;
-  max-height: calc(100vh - 52px);
-  padding: 12px 10px 10px;
+  height: calc(100vh - 32px);
+  max-height: calc(100vh - 32px);
+  padding: 24px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: 1px solid var(--border-primary);
-  border-left: none;
-  border-radius: 0;
+  gap: 16px;
+  border: none;
+  border-radius: 24px;
+  margin: 16px 0 16px 16px;
   overflow: hidden;
-  box-shadow: 8px 0 20px rgba(15, 23, 42, 0.08);
+  background: var(--surface-nav);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+.brand-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0 16px;
+  cursor: pointer;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 4px;
+}
+.collapsed-brand {
+  padding: 8px 0 16px;
+}
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--surface-nav);
+  background: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.brand .name {
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+.brand .sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+  line-height: 1.4;
 }
 .collapsed .side-inner {
   align-items: center;
@@ -179,41 +230,41 @@ function randomizeTbotFace() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px;
+  padding: 0 8px;
+  margin-bottom: 12px;
 }
 .side-title {
-  font-size: 13px;
-  font-weight: 900;
-  color: var(--text-secondary);
-  letter-spacing: 0.04em;
+  font-size: 14px;
+  font-weight: 700;
+  color: #9CA3AF;
+  letter-spacing: 0.02em;
 }
 .collapse {
   display: inline-grid;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--tw-primary) 20%, transparent);
-  background: linear-gradient(180deg, var(--bg-soft), color-mix(in srgb, var(--tw-primary) 10%, var(--bg-soft)));
+  border: none;
+  background: transparent;
   width: 32px;
   height: 32px;
   border-radius: 8px;
   cursor: pointer;
-  color: var(--tw-primary);
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  color: #9CA3AF;
+  transition: color 0.15s ease, background-color 0.2s ease;
 }
 .collapse:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(26, 86, 219, 0.18);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tw-primary) 6%, var(--bg-soft)), color-mix(in srgb, var(--tw-primary) 14%, var(--bg-soft)));
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
 }
 .px-menu {
   display: grid;
-  gap: 3px;
+  gap: 4px;
 }
 .px-menu i {
   display: block;
-  width: 12px;
+  width: 14px;
   height: 2px;
   background: currentColor;
-  box-shadow: -1px 0 0 currentColor, 1px 0 0 currentColor;
+  border-radius: 2px;
   transition: transform 0.18s ease, opacity 0.18s ease, width 0.18s ease;
 }
 .collapse:hover .px-menu i:nth-child(1) {
@@ -226,15 +277,15 @@ function randomizeTbotFace() {
   transform: translateX(1px);
 }
 .collapse.open .px-menu i:nth-child(1) {
-  width: 9px;
-  transform: translateX(2px);
+  width: 10px;
+  transform: translateX(2px) rotate(45deg) translateY(3px);
 }
 .collapse.open .px-menu i:nth-child(2) {
-  width: 12px;
+  opacity: 0;
 }
 .collapse.open .px-menu i:nth-child(3) {
-  width: 9px;
-  transform: translateX(2px);
+  width: 10px;
+  transform: translateX(2px) rotate(-45deg) translateY(-3px);
 }
 .collapsed .side-head {
   justify-content: center;
@@ -242,7 +293,7 @@ function randomizeTbotFace() {
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   flex: 1;
   min-height: 0;
   overflow: auto;
@@ -251,35 +302,32 @@ function randomizeTbotFace() {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 10px;
-  border-radius: 12px;
-  color: var(--tw-text);
-  border: 1px solid transparent;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  color: #D1D5DB;
+  border: none;
+  transition: all 0.2s ease;
 }
 .nav-item:hover {
-  background: var(--bg-muted);
-  color: var(--tw-primary);
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
 }
 .nav-item.active {
-  border-color: color-mix(in srgb, var(--tw-primary) 18%, transparent);
-  background: color-mix(in srgb, var(--tw-primary) 12%, transparent);
-  color: var(--tw-primary);
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  font-weight: 600;
 }
 .ico {
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
-  background: var(--icon-soft);
-  color: var(--icon-accent);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  color: inherit;
 }
 .nav-item:hover .ico,
 .nav-item.active .ico {
-  background: color-mix(in srgb, var(--tw-primary) 14%, transparent);
-  color: var(--tw-primary);
+  color: #FFFFFF;
 }
 .collapsed .nav-item[data-tip]:hover::after {
   content: attr(data-tip);

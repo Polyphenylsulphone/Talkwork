@@ -196,7 +196,11 @@ function setupArticleImages() {
         </div>
         <div class="author">
           <div class="avatar" :class="{ 'avatar-anon': postAnonymous }">
+<<<<<<< HEAD
             <img v-if="postAnonymous" class="avatar-img" :src="postAvatar" alt="" />
+=======
+            <img v-if="data.post.avatar_url" class="avatar-img" :src="data.post.avatar_url" alt="" />
+>>>>>>> d6473da (前端样式改动，加入默认头像)
             <template v-else>{{ data.post.username?.slice(0, 1) }}</template>
           </div>
           <div>

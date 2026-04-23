@@ -199,27 +199,30 @@ function removeResumeDraft(id) {
 
 <style scoped>
 .head {
-  padding: 16px;
+  padding: 24px;
   display: flex;
-  gap: 14px;
+  gap: 20px;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  margin-bottom: 12px;
+  border: none;
+  border-radius: 24px;
+  background: #FFFFFF;
+  margin-bottom: 24px;
 }
 .avatar {
   text-align: center;
 }
 .circle {
-  width: 86px;
-  height: 86px;
-  border-radius: 999px;
+  width: 96px;
+  height: 96px;
+  border-radius: 9999px;
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.65);
-  border: 3px solid rgba(255, 255, 255, 0.85);
-  font-size: 34px;
-  font-weight: 900;
+  background: #F3F4F6;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-size: 36px;
+  font-weight: 800;
 }
 .circle img {
   width: 100%;
@@ -228,97 +231,114 @@ function removeResumeDraft(id) {
 }
 .hint {
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--tw-muted);
 }
 .name {
-  font-size: 22px;
-  font-weight: 900;
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
 }
 .muted {
-  color: var(--tw-muted);
+  color: #6B7280;
   margin-top: 6px;
+  font-size: 14px;
 }
 .bio {
-  margin-top: 8px;
-  color: var(--tw-text);
-  font-size: 13px;
+  margin-top: 12px;
+  color: #4B5563;
+  font-size: 14px;
+  line-height: 1.5;
 }
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 .tabs button {
-  border-radius: 999px;
-  border: 1px solid rgba(26, 86, 219, 0.12);
-  padding: 8px 12px;
+  border-radius: 9999px;
+  border: none;
+  padding: 10px 20px;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.55);
-  font-weight: 900;
+  background: #FFFFFF;
+  font-weight: 600;
+  color: #4B5563;
+  transition: all 0.2s ease;
+}
+.tabs button:hover {
+  background: #F9FAFB;
 }
 .tabs button.on {
-  border-color: rgba(26, 86, 219, 0.35);
-  background: rgba(26, 86, 219, 0.1);
+  background: var(--tw-primary);
+  color: #FFFFFF;
 }
 .toolbar {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
-  padding: 10px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 16px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 20px;
+  background: #FFFFFF;
 }
 .grow {
   flex: 1;
 }
 .feed {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 .wrap-p {
   position: relative;
 }
 .op-mini {
-  border: 1px solid rgba(26, 86, 219, 0.2);
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--tw-muted);
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 4px 8px;
+  border: none;
+  background: #F3F4F6;
+  color: #4B5563;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+.op-mini:hover {
+  background: #E5E7EB;
 }
 :root[data-theme='dark'] .op-mini {
   background: rgba(30, 41, 59, 0.75);
   color: #e9f0f7;
-  border-color: rgba(93, 156, 245, 0.25);
 }
 .menu-box {
   position: relative;
 }
 .dot-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: 1px solid rgba(26, 86, 219, 0.2);
-  background: rgba(255, 255, 255, 0.78);
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: none;
+  background: #F3F4F6;
   display: inline-grid;
   place-items: center;
-  color: var(--tw-muted);
+  color: #4B5563;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+.dot-btn:hover {
+  background: #E5E7EB;
 }
 .menu-drop {
   position: absolute;
   right: 0;
-  top: calc(100% + 6px);
-  min-width: 118px;
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  top: calc(100% + 8px);
+  min-width: 140px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
-  padding: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 8px;
   z-index: 40;
 }
 .item {
@@ -326,33 +346,44 @@ function removeResumeDraft(id) {
   border: none;
   background: transparent;
   border-radius: 8px;
-  padding: 7px 8px;
+  padding: 10px 12px;
   text-align: left;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
+  color: #4B5563;
 }
 .item:hover {
-  background: rgba(26, 86, 219, 0.08);
+  background: #F3F4F6;
+  color: #111827;
 }
 .item.danger {
-  color: #b91c1c;
+  color: #EF4444;
+}
+.item.danger:hover {
+  background: #FEF2F2;
+  color: #DC2626;
 }
 .rc {
-  padding: 12px;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 16px;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: none;
+  border-radius: 20px;
+  background: #FFFFFF;
 }
 .t {
-  font-weight: 900;
+  font-weight: 800;
+  font-size: 16px;
+  color: #111827;
 }
 .sm {
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 6px;
 }
 .row {
@@ -361,9 +392,12 @@ function removeResumeDraft(id) {
   flex-wrap: wrap;
 }
 .danger-btn {
-  color: #b91c1c;
+  color: #EF4444;
 }
 .pad {
-  padding: 14px;
+  padding: 20px;
+  border: none;
+  border-radius: 20px;
+  background: #FFFFFF;
 }
 </style>
